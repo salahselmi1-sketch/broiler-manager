@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#14532d">
+<title>مدير الدواجن اللاحم</title>
+<style>
+:root{
+  --bg:#f4f6f1;--card:#ffffff;--ink:#1c2418;--muted:#667062;--line:#e2e6dc;
+  --pri:#166534;--pri2:#dcfce7;--warn:#b45309;--warn2:#fef3c7;--bad:#b91c1c;--bad2:#fee2e2;--info:#1d4ed8;--info2:#dbeafe;
+  --r:14px;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:"Segoe UI",Tahoma,"Noto Sans Arabic",Arial,sans-serif;font-size:15px;line-height:1.55}
+header{position:sticky;top:0;z-index:20;background:var(--pri);color:#fff;padding:10px 14px calc(10px) 14px;display:flex;align-items:center;gap:10px}
+header h1{font-size:17px;margin:0;flex:1;font-weight:700}
+header select{background:#ffffff22;color:#fff;border:1px solid #ffffff55;border-radius:10px;padding:6px 8px;font-size:14px;max-width:48%}
+header select option{color:#000}
+main{padding:12px 12px 90px;max-width:760px;margin:0 auto}
+nav{position:fixed;bottom:0;left:0;right:0;z-index:30;background:#fff;border-top:1px solid var(--line);display:flex;padding-bottom:env(safe-area-inset-bottom)}
+nav button{flex:1;border:0;background:none;padding:8px 2px 9px;font-size:12px;color:var(--muted);display:flex;flex-direction:column;align-items:center;gap:2px;font-family:inherit}
+nav button .ic{font-size:20px;line-height:1}
+nav button.on{color:var(--pri);font-weight:700}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:14px;margin-bottom:12px}
+.card h2{font-size:16px;margin:0 0 10px;display:flex;align-items:center;gap:8px}
+.card h3{font-size:14px;margin:12px 0 6px;color:var(--muted)}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.kpi{background:#f8faf6;border:1px solid var(--line);border-radius:12px;padding:9px 10px}
+.kpi .l{font-size:12px;color:var(--muted)}
+.kpi .v{font-size:19px;font-weight:700}
+.kpi .s{font-size:11.5px;color:var(--muted)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;border:0;border-radius:11px;padding:10px 14px;font-size:14.5px;font-family:inherit;background:var(--pri);color:#fff;font-weight:600;cursor:pointer}
+.btn.sec{background:var(--pri2);color:var(--pri)}
+.btn.ghost{background:#eef1ea;color:var(--ink)}
+.btn.bad{background:var(--bad2);color:var(--bad)}
+.btn.sm{padding:6px 10px;font-size:13px;border-radius:9px}
+.btn.full{width:100%}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.row.between{justify-content:space-between}
+.muted{color:var(--muted);font-size:13px}
+.tag{display:inline-block;font-size:11.5px;padding:2px 8px;border-radius:99px;background:#eef1ea;color:var(--muted)}
+.tag.ok{background:var(--pri2);color:var(--pri)}.tag.warn{background:var(--warn2);color:var(--warn)}.tag.bad{background:var(--bad2);color:var(--bad)}.tag.info{background:var(--info2);color:var(--info)}
+label.f{display:block;margin-bottom:9px;font-size:13px;color:var(--muted)}
+label.f input,label.f select,label.f textarea{display:block;width:100%;margin-top:3px;border:1px solid var(--line);border-radius:10px;padding:9px 10px;font-size:15px;font-family:inherit;background:#fff;color:var(--ink)}
+label.f textarea{min-height:64px}
+.chk{display:flex;align-items:center;gap:8px;padding:7px 4px;border-bottom:1px dashed var(--line);font-size:14px}
+.chk input{width:19px;height:19px;accent-color:var(--pri)}
+.list .it{padding:10px 0;border-bottom:1px solid var(--line)}
+.list .it:last-child{border-bottom:0}
+.rec{border-radius:12px;padding:10px 12px;margin-bottom:9px;border:1px solid var(--line);background:#fbfcfa}
+.rec.bad{border-color:#fecaca;background:#fff7f7}.rec.warn{border-color:#fde68a;background:#fffcf2}.rec.info{border-color:#bfdbfe;background:#f7faff}
+.rec .t{font-weight:700;font-size:14.5px}
+.rec .why{font-size:13px;color:var(--muted);margin-top:4px}
+.rec .why b{color:var(--ink)}
+.rec .act{font-size:13.5px;margin-top:5px}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th,td{padding:6px 5px;border-bottom:1px solid var(--line);text-align:right}
+th{color:var(--muted);font-weight:600;font-size:12px}
+.tabs{display:flex;gap:6px;overflow-x:auto;margin-bottom:12px;padding-bottom:2px}
+.tabs button{border:1px solid var(--line);background:#fff;border-radius:99px;padding:7px 13px;font-size:13.5px;white-space:nowrap;font-family:inherit;color:var(--ink)}
+.tabs button.on{background:var(--pri);color:#fff;border-color:var(--pri)}
+.modal{position:fixed;inset:0;background:#0007;z-index:50;display:flex;align-items:flex-end;justify-content:center}
+.sheet{background:#fff;width:100%;max-width:760px;max-height:92vh;overflow:auto;border-radius:18px 18px 0 0;padding:16px 16px calc(16px + env(safe-area-inset-bottom))}
+.sheet h2{margin:0 0 12px;font-size:17px}
+.bar{height:8px;border-radius:99px;background:#eef1ea;overflow:hidden}
+.bar>i{display:block;height:100%;background:var(--pri)}
+.empty{text-align:center;color:var(--muted);padding:22px 8px}
+.toast{position:fixed;bottom:84px;left:50%;transform:translateX(-50%);background:#1c2418;color:#fff;padding:9px 16px;border-radius:99px;font-size:14px;z-index:60;opacity:0;transition:.25s;pointer-events:none}
+.toast.on{opacity:1}
+svg.chart{width:100%;height:auto;display:block}
+.warnbox{background:var(--warn2);color:#7c4a03;border-radius:10px;padding:9px 11px;font-size:13px;margin-bottom:10px}
+.switch{position:relative;width:46px;height:26px;flex:none}
+.switch input{opacity:0;width:0;height:0}
+.switch span{position:absolute;inset:0;background:#cbd5c4;border-radius:99px;transition:.2s}
+.switch span:before{content:"";position:absolute;width:20px;height:20px;right:3px;top:3px;background:#fff;border-radius:50%;transition:.2s}
+.switch input:checked+span{background:var(--pri)}
+.switch input:checked+span:before{transform:translateX(-20px)}
+.rec-dot{display:inline-block;width:12px;height:12px;border-radius:50%;background:var(--bad);animation:p 1s infinite}
+@keyframes p{50%{opacity:.3}}
+</style>
+</head>
+<body>
+<header>
+  <h1 id="ttl">🐔 مدير الدواجن اللاحم</h1>
+  <select id="flockSel" aria-label="الدفعة الحالية"></select>
+</header>
+<main id="main"></main>
+<nav id="nav"></nav>
+<div class="toast" id="toast"></div>
+<script>
+"use strict";
+/* ============ التخزين ============ */
+const KEY='broiler_mgr_v1';
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,7);
+const today=()=>{const d=new Date();d.setMinutes(d.getMinutes()-d.getTimezoneOffset());return d.toISOString().slice(0,10)};
+const DEF_VACC=[
+  {day:1,name:'نيوكاسل + برونشيت (IB)',method:'رش في المفقس'},
+  {day:7,name:'نيوكاسل + برونشيت',method:'تقطير عين/ماء شرب'},
+  {day:12,name:'جمبورو (IBD)',method:'ماء شرب'},
+  {day:18,name:'نيوكاسل (جرعة منشطة)',method:'ماء شرب'},
+  {day:21,name:'جمبورو (جرعة ثانية)',method:'ماء شرب'}
+];
+function blank(){return{
+  flocks:[],logs:[],vaccines:[],meds:[],finance:[],contacts:[],diag:[],sounds:[],feedback:[],
+  cams:[],camSamples:[],camAlerts:[],camCfg:{on:false,interval:5,sens:{cluster:1.0,lowact:0.5,highact:2.5,zone:0.4},proposal:null,cool:{},history:[]},
+  ai:{enabled:true,active:0,versions:[{v:0,date:today(),note:'النموذج الأساسي: معايير السلالة العامة بدون تعديل',growth:{},mort:{},rulePri:{},metrics:null}],proposal:null,log:[]},
+  settings:{farm:'',currency:'₪',maxDensity:33,targetWeight:2.2,fanCap:20000,vaccTpl:DEF_VACC}
+}}
+let S;
+function load(){try{const t=localStorage.getItem(KEY);S=t?JSON.parse(t):blank()}catch(e){S=blank()}
+  const b=blank();for(const k in b){if(S[k]===undefined)S[k]=b[k]}for(const k in b.settings){if(S.settings[k]===undefined)S.settings[k]=b.settings[k]}for(const k in b.ai){if(S.ai[k]===undefined)S.ai[k]=b.ai[k]}}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){toast('تعذر الحفظ! صدّر نسخة احتياطية')}}
+load();
+
+/* ============ معايير السلالات (تقريبية) ============ */
+const BREEDS={
+  ross308:{name:'Ross 308',w:[42,190,490,950,1550,2200,2850,3450,4000]},
+  cobb500:{name:'Cobb 500',w:[42,185,470,935,1530,2180,2800,3390,3930]},
+  other:{name:'سلالة أخرى',w:[42,180,460,900,1480,2100,2720,3300,3850]}
+};
+const FCR_STD=[0.0,0.9,1.1,1.3,1.42,1.53,1.65,1.78,1.9];
+const lerp=(arr,x)=>{const i=Math.max(0,Math.min(arr.length-1,x));const a=Math.floor(i),b=Math.min(arr.length-1,a+1);return arr[a]+(arr[b]-arr[a])*(i-a)};
+const stdW=(br,day)=>lerp((BREEDS[br]||BREEDS.ross308).w,day/7);
+const stdFCR=day=>lerp(FCR_STD,day/7);
+function aiV(){return S.ai.versions.find(v=>v.v===S.ai.active)||S.ai.versions[0]}
+function growthFactor(day){if(!S.ai.enabled)return 1;const g=aiV().growth||{};const w=Math.min(8,Math.floor(day/7));return g[w]||1}
+const expW=(br,day)=>stdW(br,day)*growthFactor(day);
+const TEMP_PTS=[[0,33],[3,32],[7,30],[14,27],[21,25],[28,22],[35,20],[42,19],[60,19]];
+function targetTemp(day){for(let i=0;i<TEMP_PTS.length-1;i++){const[a,ta]=TEMP_PTS[i],[b,tb]=TEMP_PTS[i+1];if(day<=b)return +(ta+(tb-ta)*(Math.max(0,day-a))/(b-a)).toFixed(1)}return 19}
+const humRange=day=>day<7?[60,70]:[50,65];
+function lightProg(day,slaughterDay){
+  if(day<=7)return{L:23,D:1,lux:'30–40',note:'إضاءة شبه مستمرة لتعليم الصيصان مكان العلف والماء'};
+  if(slaughterDay&&day>=slaughterDay-3)return{L:20,D:4,lux:'5–10',note:'آخر 3 أيام قبل التسويق: يمكن تقليل العتمة تدريجياً'};
+  return{L:18,D:6,lux:'5–10',note:'عتمة 6 ساعات منها 4 متصلة على الأقل لصحة الأرجل والمناعة'};
+}
+const minVent=(birds,wKg)=>birds*0.6*Math.pow(Math.max(wKg,0.04),0.75);
+const maxVent=(birds,wKg)=>birds*wKg*6;
+
+/* ============ أدوات حساب الدفعة ============ */
+const dayDiff=(a,b)=>Math.round((new Date(b)-new Date(a))/86400000);
+const fl=id=>S.flocks.find(f=>f.id===id);
+function curFlock(){return fl(S.cur)||S.flocks.find(f=>f.status==='active')||S.flocks[0]}
+const flockLogs=f=>S.logs.filter(l=>l.flockId===f.id).sort((a,b)=>a.date<b.date?-1:1);
+function ageOf(f,date){return dayDiff(f.startDate,date||(f.status==='closed'&&f.endDate?f.endDate:today()))}
+function stats(f){
+  const L=flockLogs(f);let dead=0,feed=0,water=0;for(const l of L){dead+=(+l.dead||0)+(+l.culled||0);feed+=+l.feedKg||0;water+=+l.waterL||0}
+  const live=Math.max(0,f.count-dead-(+f.soldBirds||0));
+  const wl=[...L].reverse().find(l=>+l.avgWeightG>0);
+  const age=ageOf(f);
+  const lastW=wl?+wl.avgWeightG:null;
+  const estW=lastW&&wl?lastW*(expW(f.breed,age)/Math.max(1,expW(f.breed,ageOf(f,wl.date)))):expW(f.breed,age);
+  const biomass=(f.count-dead)*estW/1000;
+  const gain=biomass-(f.count*0.042);
+  const feedDays=L.filter(l=>+l.feedKg>0).length;
+  const fcr=feed>0&&gain>0&&feedDays>=Math.max(3,age*0.7)?feed/biomass:null;
+  const mortPct=f.count?dead/f.count*100:0;
+  const area=+f.area||0;
+  const density=area?live*estW/1000/area:null;
+  // مؤشر الكفاءة الأوروبي EPEF
+  const epef=fcr&&age>0?((100-mortPct)*(estW/1000)/(age*fcr))*100:null;
+  return{L,dead,feed,water,live,age,lastW,estW,biomass,fcr,mortPct,density,epef,area};
+}
+const fmt=(n,d=0)=>n==null||isNaN(n)?'—':(+n).toLocaleString('en-US',{maximumFractionDigits:d,minimumFractionDigits:0});
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+/* ============ محرك التوجيه (قواعد + أسباب) ============ */
+function recommendations(f){
+  if(!f)return[];
+  const R=[];const st=stats(f);const age=st.age;const L=st.L;const last=L[L.length-1];const prev=L[L.length-2];
+  const add=(id,sev,title,why,act)=>R.push({id,sev,title,why,act});
+  if(f.status!=='active')return R;
+  if(!L.find(l=>l.date===today()))add('nolog','info','لم يُسجَّل يوم اليوم','آخر سجل: <b>'+(last?last.date:'لا يوجد')+'</b>. التوصيات تعتمد على بيانات يومية.','سجّل النفوق والعلف والماء والحرارة الآن.');
+  if(last){
+    const liveBefore=Math.max(1,f.count-st.dead+(+last.dead||0)+(+last.culled||0));
+    const dpct=((+last.dead||0)+(+last.culled||0))/liveBefore*100;
+    const lim=age<=7?0.25:age<=28?0.1:0.15;
+    if(dpct>lim)add('mort_daily',dpct>lim*3?'bad':'warn','نفوق يومي مرتفع','نفوق '+last.date+': <b>'+fmt(dpct,2)+'%</b> والحد المقبول لعمر '+age+' يوم ≈ <b>'+lim+'%</b>.','افحص الطيور النافقة وشرّح عينة، وراجع الحرارة والماء. سجّل الأعراض في قسم التشخيص.');
+    const p3=L.slice(-4,-1);if(p3.length>=2){const avg=p3.reduce((s,l)=>s+(+l.dead||0),0)/p3.length;if(+last.dead>=Math.max(5,avg*2))add('mort_spike','bad','قفزة مفاجئة في النفوق','نفوق اليوم <b>'+last.dead+'</b> مقابل متوسط <b>'+fmt(avg,1)+'</b> في الأيام السابقة (ضعف أو أكثر).','اتصل بالطبيب البيطري، فالقفزات المفاجئة قد تعني مرضاً معدياً. أوقف حركة الزوار والمعدات بين العنابر.')}
+    const mBase=S.ai.enabled?(aiV().mort||{})[Math.min(8,Math.floor(age/7))]:null;
+    if(mBase!=null&&dpct>mBase*2&&dpct>0.05)add('mort_ai','warn','نفوق أعلى من نمط مزرعتك','متوسط نفوقك اليومي في هذا الأسبوع من الدفعات السابقة <b>'+fmt(mBase,3)+'%</b>، واليوم <b>'+fmt(dpct,3)+'%</b> (من نموذج الذكاء الاصطناعي v'+S.ai.active+').','قارن الظروف بالدفعات السابقة: الحرارة، والعلف، ومصدر الصيصان.');
+    if(+last.tempC){const t=targetTemp(age);const d=+last.tempC-t;if(Math.abs(d)>2)add('temp',Math.abs(d)>4?'bad':'warn',d>0?'الحرارة أعلى من المطلوب':'الحرارة أقل من المطلوب','المسجّل <b>'+last.tempC+'°</b> والمطلوب لعمر '+age+' يوم ≈ <b>'+t+'°</b> (فرق '+fmt(d,1)+'°).',d>0?'زد التهوية أو شغّل التبريد، ووفّر ماء بارداً، وخفّف الكثافة إن أمكن.':'خفّض التهوية إلى الحد الأدنى دون أن تقل عنه، وارفع التدفئة. راقب تجمع الصيصان تحت الدفايات.')}
+    if(+last.humidity){const[a,b]=humRange(age);const h=+last.humidity;if(h>b+5||h<a-10)add('hum','warn',h>b?'رطوبة مرتفعة':'رطوبة منخفضة','الرطوبة <b>'+h+'%</b> والمدى المناسب لهذا العمر <b>'+a+'–'+b+'%</b>.',h>b?'زد التهوية الدنيا، وافحص تسرب المشارب ورطوبة الفرشة (خطر الأمونيا والكوكسيديا).':'رطّب الجو بالرذاذ أو ضع ماء قرب الدفايات (الجفاف يسبب جفاف الصيصان وأمراض التنفس).')}
+    if(+last.feedKg&&+last.waterL){const r=last.waterL/last.feedKg;if(r<1.4||r>2.4)add('water_ratio','warn','نسبة الماء إلى العلف غير طبيعية','النسبة <b>'+fmt(r,2)+'</b> والطبيعي تقريباً <b>1.6–2.0</b> عند 21° (ترتفع مع الحر).',r<1.4?'افحص المشارب والضغط والخطوط. نقص الماء أول علامة لمشكلة صحية.':'افحص تسرب المشارب، والحرارة، ووجود إسهال أو ملوحة في العلف.')}
+    if(prev&&+last.feedKg&&+prev.feedKg&&age>3&&last.feedKg<prev.feedKg*0.85)add('feed_drop','warn','انخفاض في استهلاك العلف','العلف اليوم <b>'+last.feedKg+' كغ</b> مقابل <b>'+prev.feedKg+' كغ</b> أمس (انخفاض '+fmt((1-last.feedKg/prev.feedKg)*100,0)+'%).','الانخفاض المفاجئ يسبق ظهور المرض غالباً بيوم أو يومين. افحص الطيور والحرارة وجودة العلف.');
+    if(+last.lightHours&&age>7){const lp=lightProg(age);if(24-last.lightHours<4)add('dark','warn','العتمة قليلة','ساعات العتمة <b>'+(24-last.lightHours)+'</b> والمطلوب بعد اليوم 7 ≈ <b>'+lp.D+'</b> منها 4 متصلة.','اضبط مؤقت الإضاءة على '+lp.L+' ضوء / '+lp.D+' عتمة.')}
+    if(+last.lux){const lp=lightProg(age);const[lo,hi]=lp.lux.split('–').map(Number);if(last.lux<lo*0.7||last.lux>hi*1.5)add('lux','info','شدة الإضاءة خارج المدى','المقاس <b>'+last.lux+' لوكس</b> والمناسب <b>'+lp.lux+'</b> لهذا العمر.','عدّل قوة اللمبات أو الديمر، وقِس على مستوى رأس الطائر.')}
+  }
+  const wl=[...L].reverse().find(l=>+l.avgWeightG>0);
+  if(wl){const a=ageOf(f,wl.date);const e=expW(f.breed,a);const r=wl.avgWeightG/e;if(r<0.9)add('weight','warn','الوزن أقل من المتوقع','الوزن <b>'+wl.avgWeightG+' غ</b> بعمر '+a+' يوم، والمتوقع <b>'+fmt(e)+' غ</b>'+(growthFactor(a)!==1?' (معدّل حسب مزرعتك)':' (معيار '+BREEDS[f.breed].name+')')+'. أي '+fmt(r*100,0)+'%.','راجع كمية العلف وجودته، والماء، والحرارة، وصحة الأمعاء. وزن عينة أكبر (1% أو 100 طائر).')}
+  else if(age>=7)add('noweight','info','لا يوجد وزن مسجّل','بدون وزن العينة لا يمكن حساب معامل التحويل بدقة ولا يتعلم النموذج.','زن عينة أسبوعياً على الأقل (يفضل 50–100 طائر من أماكن مختلفة).');
+  if(st.area){const projW=expW(f.breed,age+7)/1000;const projD=st.live*projW/st.area;
+    if(st.density>S.settings.maxDensity)add('density','bad','الكثافة تجاوزت الحد','الكثافة الحالية <b>'+fmt(st.density,1)+' كغ/م²</b> والحد المحدد <b>'+S.settings.maxDensity+'</b>.','سوّق جزءاً من القطيع أو وسّع المساحة، وزد التهوية.');
+    else if(projD>S.settings.maxDensity)add('density_soon','warn','الكثافة ستتجاوز الحد خلال أسبوع','المتوقع بعد 7 أيام <b>'+fmt(projD,1)+' كغ/م²</b> (الحد '+S.settings.maxDensity+').','خطّط لتسويق جزئي أو لتوسيع المساحة مبكراً.')}
+  for(const v of S.vaccines.filter(v=>v.flockId===f.id&&!v.done)){const d=v.day-age;if(d<=1&&d>=-3)add('vacc_'+v.id,d<0?'bad':'warn',d<0?'تحصين متأخر: '+v.name:'تحصين قريب: '+v.name,'موعده يوم <b>'+v.day+'</b> والعمر الآن <b>'+age+'</b>.','الطريقة: '+esc(v.method)+'. أوقف الكلور في الماء قبل التحصين بيوم، وعلّمه "تم" بعد التنفيذ.')}
+  for(const m of S.meds.filter(m=>m.flockId===f.id)){const end=new Date(m.endDate);end.setDate(end.getDate()+(+m.withdrawal||0));const left=dayDiff(today(),end.toISOString().slice(0,10));if(left>0)add('wd_'+m.id,'warn','فترة سحب دواء سارية','<b>'+esc(m.name)+'</b>: لا تسويق قبل <b>'+end.toISOString().slice(0,10)+'</b> (باقي '+left+' يوم).','لا تبع الطيور قبل انتهاء فترة السحب حفاظاً على سلامة المستهلك.')}
+  const snd=S.sounds.filter(s=>s.flockId===f.id).slice(-1)[0];
+  if(snd&&snd.flag&&dayDiff(snd.date,today())<=2)add('sound','warn','أصوات غير معتادة في التسجيل الأخير','عدد الأصوات الحادة القصيرة (احتمال سعال/عطاس) <b>'+fmt(snd.peaksPerMin,1)+'/دقيقة</b> مقابل خط أساس <b>'+fmt(snd.base,1)+'</b>.','استمع للقطيع ليلاً في هدوء، وافحص علامات التنفس. سجّل الأعراض في التشخيص.');
+  R.push(...camRecs(f));
+  // ترتيب: الخطورة ثم أولوية الذكاء الاصطناعي
+  const sevRank={bad:0,warn:1,info:2};const pri=S.ai.enabled?(aiV().rulePri||{}):{};
+  const base=id=>id.split('_')[0];
+  R.sort((a,b)=>sevRank[a.sev]-sevRank[b.sev]||(pri[base(b.id)]||0)-(pri[base(a.id)]||0));
+  return R;
+}
+
+/* ============ الذكاء الاصطناعي المتعلم تحت السيطرة ============ */
+function weeklyRatios(f){const out={};for(const l of flockLogs(f)){if(!(+l.avgWeightG>0))continue;const a=ageOf(f,l.date);if(a<3)continue;const w=Math.min(8,Math.floor(a/7));(out[w]=out[w]||[]).push(l.avgWeightG/stdW(f.breed,a))}const r={};for(const w in out)r[w]=out[w].reduce((s,x)=>s+x,0)/out[w].length;return r}
+function weeklyMort(f){const by={};let cum=0;for(const l of flockLogs(f)){const a=ageOf(f,l.date);const live=Math.max(1,f.count-cum);const d=(+l.dead||0)+(+l.culled||0);cum+=d;const w=Math.min(8,Math.floor(a/7));(by[w]=by[w]||[]).push(d/live*100)}const r={};for(const w in by)r[w]=by[w].reduce((s,x)=>s+x,0)/by[w].length;return r}
+function fitFrom(flocks){const g={},m={},gc={},mc={};for(const f of flocks){const r=weeklyRatios(f),mo=weeklyMort(f);for(const w in r){g[w]=(g[w]||0)+r[w];gc[w]=(gc[w]||0)+1}for(const w in mo){m[w]=(m[w]||0)+mo[w];mc[w]=(mc[w]||0)+1}}
+  for(const w in g)g[w]=+Math.min(1.3,Math.max(0.7,g[w]/gc[w])).toFixed(3);for(const w in m)m[w]=+(m[w]/mc[w]).toFixed(4);return{growth:g,mort:m}}
+function mape(f,growth){let e=0,n=0;for(const l of flockLogs(f)){if(!(+l.avgWeightG>0))continue;const a=ageOf(f,l.date);if(a<3)continue;const p=stdW(f.breed,a)*(growth[Math.min(8,Math.floor(a/7))]||1);e+=Math.abs(p-l.avgWeightG)/l.avgWeightG;n++}return n?e/n*100:null}
+function rulePriorities(){const c={};for(const fb of S.feedback){const k=fb.rule.split('_')[0];c[k]=c[k]||{a:0,d:0};fb.action==='accept'?c[k].a++:c[k].d++}const p={};for(const k in c){const t=c[k].a+c[k].d;if(t>=3)p[k]=+((c[k].a-c[k].d)/t).toFixed(2)}return p}
+function proposeModel(){
+  const closed=S.flocks.filter(f=>f.status==='closed'&&flockLogs(f).some(l=>+l.avgWeightG>0));
+  if(!closed.length){toast('يلزم إغلاق دفعة واحدة على الأقل فيها أوزان مسجلة');return}
+  const fit=fitFrom(closed);
+  let metrics={flocks:closed.length};
+  if(closed.length>=2){// تحقق: تدريب على الكل ما عدا آخر دفعة واختبار عليها
+    const test=closed[closed.length-1];const tr=fitFrom(closed.slice(0,-1));
+    metrics.test=test.name;metrics.stdErr=mape(test,{});metrics.newErr=mape(test,tr.growth);metrics.curErr=mape(test,S.ai.enabled?aiV().growth:{});
+  }else{metrics.stdErr=mape(closed[0],{});metrics.newErr=mape(closed[0],fit.growth);metrics.note='دفعة واحدة فقط: الخطأ محسوب على بيانات التدريب نفسها (تقدير متفائل)'}
+  S.ai.proposal={date:today(),growth:fit.growth,mort:fit.mort,rulePri:rulePriorities(),metrics};
+  aiLog('اقتراح نموذج جديد من '+closed.length+' دفعة مغلقة');save();render();
+}
+function approveModel(){const p=S.ai.proposal;if(!p)return;const v=Math.max(...S.ai.versions.map(x=>x.v))+1;S.ai.versions.push({v,date:today(),note:'مُعتمد من المالك. مبني على '+p.metrics.flocks+' دفعة',growth:p.growth,mort:p.mort,rulePri:p.rulePri,metrics:p.metrics});S.ai.active=v;S.ai.proposal=null;aiLog('اعتماد النموذج v'+v);save();toast('تم اعتماد v'+v);render()}
+function rejectModel(){S.ai.proposal=null;aiLog('رفض الاقتراح');save();render()}
+function aiLog(t){S.ai.log.unshift({d:new Date().toLocaleString('en-GB'),t});S.ai.log=S.ai.log.slice(0,200)}
+
+/* ============ قاعدة التشخيص ============ */
+const SYM={
+  ext:{resp:'عطاس / خرخرة / صعوبة تنفس',nerv:'أعراض عصبية (التواء رقبة، شلل، رجفة)',gdiar:'إسهال أخضر',wdiar:'إسهال أبيض مائي',bdiar:'إسهال دموي أو بني',sudden:'نفوق مفاجئ ومرتفع',cyan:'زرقة العرف والدلايات',headsw:'تورم الرأس والوجه',depr:'خمول وانخفاض الشهية',ruff:'ريش منفوش وتجمع',eye:'إفرازات أو تورم حول العين',lame:'عرج أو صعوبة مشي',belly:'انتفاخ البطن',pant:'لهاث وفتح الأجنحة',dropfeed:'انخفاض حاد في العلف والماء'},
+  nec:{prov:'نزيف في المعدة الغدية',trach:'احتقان أو مخاط في القصبة الهوائية',kid:'تضخم الكلى وترسب أملاح (يوريت)',bursa:'تضخم أو نزيف غدة فابريشيا',thigh:'نزيف في عضلات الفخذ والصدر',intb:'دم أو تقرحات في الأمعاء',ceca:'دم في الأعورين',necro:'أمعاء متنكرزة بغشاء أصفر وقوام هش',fibr:'طبقة فيبرين على القلب والكبد',airs:'عكارة أو جبن في الأكياس الهوائية',asc:'سائل في البطن وتضخم القلب',liver:'تضخم الكبد مع بقع'}
+};
+const DIS=[
+  {n:'نيوكاسل (ND)',s:{resp:2,nerv:3,gdiar:2,sudden:2,dropfeed:1,prov:4,trach:1,intb:2},note:'مرض معدٍ خطير: راجع برنامج التحصين، وأبلغ الطبيب فوراً.'},
+  {n:'التهاب الشعب المعدي (IB)',s:{resp:3,depr:1,eye:1,trach:3,kid:3},note:'يصيب الجهاز التنفسي والكلى. راجع التهوية والتحصين.'},
+  {n:'الجمبورو (IBD)',s:{wdiar:3,depr:2,ruff:2,bursa:5,thigh:3,kid:1},age:[18,45],note:'غالباً بين الأسبوع 3 و6. يضعف المناعة لما بعده.'},
+  {n:'الكوكسيديا',s:{bdiar:4,ruff:2,depr:1,dropfeed:1,intb:3,ceca:4},age:[12,60],note:'مرتبطة برطوبة الفرشة. يحتاج تأكيداً مخبرياً لنوع الإيميريا.'},
+  {n:'المايكوبلازما / التنفسي المزمن (CRD)',s:{resp:3,eye:2,depr:1,airs:4,trach:1,fibr:1},note:'يتفاقم مع الأمونيا وسوء التهوية وبعد التحصين.'},
+  {n:'الإشريكية القولونية (E. coli)',s:{depr:2,ruff:1,resp:1,fibr:5,airs:2,liver:1},note:'غالباً عدوى ثانوية. يُفضّل اختبار حساسية قبل اختيار المضاد.'},
+  {n:'إنفلونزا الطيور (AI)',s:{sudden:5,cyan:4,headsw:4,resp:1,dropfeed:2,prov:2,thigh:2},note:'⚠ مرض واجب الإبلاغ: اعزل العنبر وأبلغ الطبيب والجهات البيطرية الرسمية فوراً.'},
+  {n:'التهاب الأمعاء النخري',s:{depr:2,sudden:2,dropfeed:1,necro:5,bdiar:1},age:[14,45],note:'مرتبط بالكوكسيديا وتغيير العلف.'},
+  {n:'الاستسقاء (Ascites)',s:{belly:4,resp:1,depr:1,asc:5},age:[21,60],note:'مرتبط بالنمو السريع ونقص الأكسجين والبرد. راجع التهوية الدنيا.'},
+  {n:'الإجهاد الحراري',s:{pant:5,sudden:2,dropfeed:1},note:'ليس مرضاً معدياً: خفّض الحرارة فوراً، وزد التهوية، ووفّر ماء بارداً وإلكتروليتات.'},
+  {n:'مشاكل الأرجل (عظمية/فيروسية)',s:{lame:5},note:'راجع الكثافة، وبرنامج الإضاءة، وتوازن الكالسيوم والفوسفور.'}
+];
+function diagnose(sel,age){const out=[];for(const d of DIS){let tot=0,hit=0;for(const k in d.s){tot+=d.s[k];if(sel.includes(k))hit+=d.s[k]}if(!hit)continue;let sc=hit/tot;const extra=sel.filter(k=>!d.s[k]).length;sc*=Math.pow(0.9,extra);if(d.age&&age!=null&&(age<d.age[0]||age>d.age[1]))sc*=0.6;out.push({n:d.n,sc:Math.round(sc*100),note:d.note,age:d.age})}return out.sort((a,b)=>b.sc-a.sc).slice(0,4)}
+
+/* ============ الواجهة ============ */
+const TABS=[['home','🏠','الرئيسية'],['cam','📷','الكاميرا'],['log','📋','السجل'],['env','🌡️','البيئة'],['health','🩺','الصحة'],['more','☰','المزيد']];
+let tab='home',sub={env:'vent',health:'diag',more:'fin'};
+function toast(t){const e=document.getElementById('toast');e.textContent=t;e.classList.add('on');clearTimeout(e._t);e._t=setTimeout(()=>e.classList.remove('on'),2200)}
+function renderNav(){document.getElementById('nav').innerHTML=TABS.map(([k,i,n])=>'<button class="'+(tab===k?'on':'')+'" onclick="go(\''+k+'\')"><span class="ic">'+i+'</span>'+n+'</button>').join('')}
+function renderSel(){const s=document.getElementById('flockSel');const f=curFlock();s.innerHTML=S.flocks.length?S.flocks.map(x=>'<option value="'+x.id+'"'+(f&&x.id===f.id?' selected':'')+'>'+esc(x.name)+(x.status==='closed'?' (مغلقة)':'')+'</option>').join(''):'<option>لا توجد دفعات</option>';s.onchange=()=>{S.cur=s.value;save();render()}}
+function go(t){tab=t;render();window.scrollTo(0,0)}
+function setSub(g,k){sub[g]=k;render()}
+function subTabs(g,items){return'<div class="tabs">'+items.map(([k,n])=>'<button class="'+(sub[g]===k?'on':'')+'" onclick="setSub(\''+g+'\',\''+k+'\')">'+n+'</button>').join('')+'</div>'}
+function render(){renderNav();renderSel();const m=document.getElementById('main');m.innerHTML=({home:vHome,cam:vCam,log:vLog,env:vEnv,health:vHealth,more:vMore})[tab]()}
+const noFlock=()=>'<div class="card empty">لا توجد دفعة بعد.<br><br><button class="btn" onclick="flockForm()">➕ إضافة دفعة جديدة</button></div>';
+
+/* ---- الرئيسية ---- */
+function vHome(){
+  const f=curFlock();if(!f)return'<div class="card"><h2>👋 أهلاً بك</h2><p class="muted">ابدأ بإضافة أول دفعة. كل البيانات تُحفظ على هاتفك فقط، وتعمل بدون إنترنت.</p><button class="btn full" onclick="flockForm()">➕ إضافة دفعة جديدة</button></div>';
+  const st=stats(f);const R=recommendations(f);const e=expW(f.breed,st.age);
+  const tw=S.settings.targetWeight*1000;let mDay=null;for(let d=st.age;d<70;d++){if(expW(f.breed,d)*(st.lastW?st.estW/expW(f.breed,st.age):1)>=tw){mDay=d;break}}
+  let h='<div class="card"><div class="row between"><h2>'+esc(f.name)+' <span class="tag '+(f.status==='active'?'ok':'')+'">'+(f.status==='active'?'نشطة':'مغلقة')+'</span></h2><button class="btn sm ghost" onclick="flockForm(\''+f.id+'\')">تعديل</button></div>'+
+  '<div class="grid">'+
+   kpi('العمر',st.age+' يوم',BREEDS[f.breed].name)+
+   kpi('الطيور الحية',fmt(st.live),'من '+fmt(f.count))+
+   kpi('النفوق التراكمي',fmt(st.mortPct,2)+'%',fmt(st.dead)+' طائر')+
+   kpi('الوزن التقديري',fmt(st.estW)+' غ','المتوقع '+fmt(e)+' غ')+
+   kpi('معامل التحويل',fmt(st.fcr,2),st.fcr==null&&st.feed>0?'سجل العلف غير مكتمل':'المعيار ≈ '+fmt(stdFCR(st.age),2))+
+   kpi('الكثافة',st.density?fmt(st.density,1)+' كغ/م²':'—','الحد '+S.settings.maxDensity)+
+   kpi('العلف الكلي',fmt(st.feed)+' كغ',fmt(st.feed/Math.max(1,f.count)*1000)+' غ/طائر')+
+   kpi('مؤشر الكفاءة EPEF',fmt(st.epef),'جيد > 350')+
+  '</div>'+(f.status==='active'&&mDay?'<p class="muted" style="margin:10px 0 0">📅 الوصول لوزن التسويق '+S.settings.targetWeight+' كغ متوقع بعمر <b>'+mDay+'</b> يوم (بعد '+(mDay-st.age)+' يوم).</p>':'')+
+  (f.status==='active'?'<div class="row" style="margin-top:10px"><button class="btn" onclick="logForm()">➕ سجل اليوم</button><button class="btn sec" onclick="go(\'log\')">عرض السجل</button></div>':'')+'</div>';
+  h+='<div class="card"><h2>🧭 التوجيه والتنبيهات</h2>'+(R.length?R.map(recHTML).join(''):'<div class="empty">✅ لا توجد تنبيهات. كل المؤشرات ضمن الحدود.</div>')+'<p class="muted" style="margin:6px 0 0">'+(S.ai.enabled?'🤖 الذكاء الاصطناعي مفعّل (v'+S.ai.active+')':'⏸ الذكاء الاصطناعي متوقف: تعمل القواعد العامة فقط')+'</p></div>';
+  h+='<div class="card"><h2>📈 الوزن مقابل المتوقع</h2>'+weightChart(f)+'</div>';
+  return h;
+}
+const kpi=(l,v,s)=>'<div class="kpi"><div class="l">'+l+'</div><div class="v">'+v+'</div><div class="s">'+s+'</div></div>';
+function recHTML(r){const fb=S.feedback.filter(x=>x.rule===r.id&&x.date===today())[0];return'<div class="rec '+r.sev+'"><div class="t">'+(r.sev==='bad'?'🔴 ':r.sev==='warn'?'🟠 ':'🔵 ')+r.title+'</div><div class="why">السبب: '+r.why+'</div><div class="act">👈 '+r.act+'</div>'+
+  (r.id==='x'?'':fb?'<div class="muted" style="margin-top:5px">تقييمك: '+(fb.action==='accept'?'👍 مفيدة':'👎 غير مفيدة')+'</div>':'<div class="row" style="margin-top:7px"><button class="btn sm sec" onclick="feedback(\''+r.id+'\',\'accept\')">👍 مفيدة</button><button class="btn sm ghost" onclick="feedback(\''+r.id+'\',\'dismiss\')">👎 غير مفيدة</button></div>')+'</div>'}
+function feedback(rule,action){S.feedback.push({rule,action,date:today()});save();toast('شكراً، سيتعلم النظام من تقييمك بعد موافقتك');render()}
+function weightChart(f){
+  const L=flockLogs(f).filter(l=>+l.avgWeightG>0);const age=Math.max(7,ageOf(f));const maxD=Math.max(age,...L.map(l=>ageOf(f,l.date)))+3;
+  const W=340,H=170,p=30;const maxW=Math.max(expW(f.breed,maxD),stdW(f.breed,maxD),...L.map(l=>+l.avgWeightG))*1.08;
+  const x=d=>p+(W-p-8)*d/maxD,y=w=>H-22-(H-34)*w/maxW;
+  let ps='',pe='';for(let d=0;d<=maxD;d++){ps+=(d?'L':'M')+x(d).toFixed(1)+' '+y(stdW(f.breed,d)).toFixed(1);pe+=(d?'L':'M')+x(d).toFixed(1)+' '+y(expW(f.breed,d)).toFixed(1)}
+  let g='';for(let i=0;i<=4;i++){const w=maxW*i/4;g+='<line x1="'+p+'" x2="'+(W-8)+'" y1="'+y(w)+'" y2="'+y(w)+'" stroke="#e2e6dc"/><text x="'+(p-4)+'" y="'+(y(w)+4)+'" font-size="9" fill="#667062" text-anchor="end">'+fmt(w/1000,1)+'</text>'}
+  for(let d=0;d<=maxD;d+=7)g+='<text x="'+x(d)+'" y="'+(H-6)+'" font-size="9" fill="#667062" text-anchor="middle">'+d+'</text>';
+  const dots=L.map(l=>'<circle cx="'+x(ageOf(f,l.date))+'" cy="'+y(l.avgWeightG)+'" r="3.5" fill="#166534"/>').join('');
+  return'<svg class="chart" viewBox="0 0 '+W+' '+H+'" direction="ltr">'+g+'<path d="'+ps+'" fill="none" stroke="#9aa594" stroke-dasharray="4 3" stroke-width="1.5"/>'+(growthFactor(1)!==1||Object.keys(aiV().growth||{}).length&&S.ai.enabled?'<path d="'+pe+'" fill="none" stroke="#1d4ed8" stroke-width="1.8"/>':'')+dots+'</svg><div class="row muted" style="gap:14px;font-size:12px"><span>┄ معيار السلالة</span>'+(S.ai.enabled&&Object.keys(aiV().growth||{}).length?'<span style="color:#1d4ed8">━ متوقع لمزرعتك (AI)</span>':'')+'<span style="color:#166534">● أوزانك (كغ / يوم)</span></div>';
+}
+
+/* ---- السجل اليومي ---- */
+function vLog(){
+  const f=curFlock();if(!f)return noFlock();const L=flockLogs(f).reverse();
+  return'<div class="card"><div class="row between"><h2>📋 السجل اليومي - '+esc(f.name)+'</h2>'+(f.status==='active'?'<button class="btn sm" onclick="logForm()">➕ إضافة</button>':'')+'</div>'+
+  (L.length?'<div style="overflow-x:auto"><table><tr><th>التاريخ</th><th>عمر</th><th>نفوق</th><th>علف كغ</th><th>ماء ل</th><th>°C</th><th>رطوبة</th><th>وزن غ</th><th></th></tr>'+
+   L.map(l=>'<tr><td>'+l.date.slice(5)+'</td><td>'+ageOf(f,l.date)+'</td><td>'+((+l.dead||0)+(+l.culled||0))+'</td><td>'+(l.feedKg||'')+'</td><td>'+(l.waterL||'')+'</td><td>'+(l.tempC||'')+'</td><td>'+(l.humidity||'')+'</td><td>'+(l.avgWeightG||'')+'</td><td><button class="btn sm ghost" onclick="logForm(\''+l.id+'\')">✎</button></td></tr>').join('')+'</table></div>':'<div class="empty">لا توجد سجلات بعد</div>')+'</div>'+
+  '<div class="card"><h2>🐣 الدفعات</h2><div class="list">'+S.flocks.map(x=>{const s=stats(x);return'<div class="it"><div class="row between"><b>'+esc(x.name)+'</b><span class="tag '+(x.status==='active'?'ok':'')+'">'+(x.status==='active'?'نشطة':'مغلقة')+'</span></div><div class="muted">'+x.startDate+' • '+BREEDS[x.breed].name+' • '+fmt(x.count)+' صوص • نفوق '+fmt(s.mortPct,1)+'% • FCR '+fmt(s.fcr,2)+'</div><div class="row" style="margin-top:6px"><button class="btn sm ghost" onclick="S.cur=\''+x.id+'\';save();go(\'home\')">فتح</button><button class="btn sm ghost" onclick="flockForm(\''+x.id+'\')">تعديل</button>'+(x.status==='active'?'<button class="btn sm sec" onclick="closeForm(\''+x.id+'\')">إغلاق الدفعة (تسويق)</button>':'')+'</div></div>'}).join('')+'</div><button class="btn full" style="margin-top:10px" onclick="flockForm()">➕ دفعة جديدة</button></div>';
+}
+
+/* ---- البيئة ---- */
+function vEnv(){
+  const f=curFlock();const st=f?stats(f):null;const age=st?st.age:0;const birds=st?st.live:10000;const w=st?st.estW/1000:0.04;
+  let h=subTabs('env',[['vent','🌬️ التهوية'],['light','💡 الإضاءة'],['space','📐 المساحة']]);
+  if(sub.env==='vent'){
+    const t=targetTemp(age),[h1,h2]=humRange(age);
+    h+='<div class="card"><h2>🌬️ التهوية والحرارة والرطوبة</h2><div class="grid3">'+kpi('الحرارة المطلوبة',t+'°','عمر '+age+' يوم')+kpi('الرطوبة',h1+'–'+h2+'%','المدى المناسب')+kpi('الأمونيا','< 10 ppm','حد أقصى 20')+'</div>'+
+    '<h3>حاسبة التهوية</h3><div class="grid"><label class="f">عدد الطيور<input id="vb" type="number" value="'+birds+'"></label><label class="f">متوسط الوزن (كغ)<input id="vw" type="number" step="0.01" value="'+w.toFixed(2)+'"></label><label class="f">الحرارة الخارجية °C<input id="vo" type="number" value="20"></label><label class="f">قدرة المروحة (م³/س)<input id="vf" type="number" value="'+S.settings.fanCap+'"></label></div><label class="f">الحرارة المطلوبة داخل العنبر °C<input id="vt" type="number" value="'+t+'"></label><button class="btn full" onclick="calcVent()">احسب</button><div id="vres" style="margin-top:10px"></div></div>'+
+    '<div class="card"><h2>📊 جدول الحرارة حسب العمر</h2><table><tr><th>العمر</th><th>الحرارة</th><th>الرطوبة</th><th>تهوية دنيا لكل 1000 طائر</th></tr>'+[0,3,7,14,21,28,35,42].map(d=>'<tr><td>'+d+'</td><td>'+targetTemp(d)+'°</td><td>'+humRange(d).join('–')+'%</td><td>'+fmt(minVent(1000,stdW('ross308',d)/1000))+' م³/س</td></tr>').join('')+'</table><p class="muted">القيم استرشادية. راقب سلوك الطيور: التجمع يعني برداً، والتباعد واللهاث يعنيان حراً.</p></div>';
+  }
+  if(sub.env==='light'){
+    const sd=f?(()=>{for(let d=0;d<70;d++)if(expW(f.breed,d)>=S.settings.targetWeight*1000)return d;return 42})():42;const lp=lightProg(age,sd);
+    h+='<div class="card"><h2>💡 برنامج الإضاءة اليوم</h2><div class="grid3">'+kpi('ضوء',lp.L+' س','')+kpi('عتمة',lp.D+' س','4 متصلة على الأقل')+kpi('الشدة',lp.lux+' لوكس','')+'</div><p class="muted">'+lp.note+'</p>'+
+    '<h3>حاسبة شدة الإضاءة</h3><div class="grid"><label class="f">مساحة العنبر م²<input id="la" type="number" value="'+(f&&f.area||1000)+'"></label><label class="f">اللوكس المطلوب<input id="ll" type="number" value="'+(age<=7?35:8)+'"></label><label class="f">لومن اللمبة الواحدة<input id="lm" type="number" value="1600"></label><label class="f">معامل الاستفادة (0.4–0.6)<input id="lu" type="number" step="0.05" value="0.5"></label></div><button class="btn full" onclick="calcLight()">احسب عدد اللمبات</button><div id="lres" style="margin-top:10px"></div></div>'+
+    '<div class="card"><h2>🗓️ البرنامج الكامل</h2><table><tr><th>الأيام</th><th>ضوء/عتمة</th><th>لوكس</th></tr><tr><td>0–7</td><td>23 / 1</td><td>30–40</td></tr><tr><td>8 – '+(sd-4)+'</td><td>18 / 6</td><td>5–10</td></tr><tr><td>'+(sd-3)+' – '+sd+'</td><td>20 / 4</td><td>5–10</td></tr></table><p class="muted">التسويق المتوقع بعمر '+sd+' يوم لوزن '+S.settings.targetWeight+' كغ. قِس الإضاءة على مستوى رأس الطائر.</p></div>';
+  }
+  if(sub.env==='space'){
+    h+='<div class="card"><h2>📐 حساب المساحة والكثافة</h2><div class="grid"><label class="f">عدد الطيور<input id="sb" type="number" value="'+(f?f.count:10000)+'"></label><label class="f">وزن التسويق المتوقع (كغ)<input id="sw" type="number" step="0.1" value="'+S.settings.targetWeight+'"></label><label class="f">الكثافة القصوى (كغ/م²)<input id="sd" type="number" value="'+S.settings.maxDensity+'"></label><label class="f">المساحة المتاحة م²<input id="sa" type="number" value="'+(f&&f.area||'')+'"></label></div><button class="btn full" onclick="calcSpace()">احسب</button><div id="sres" style="margin-top:10px"></div>'+
+    '<p class="muted">مرجع: الاتحاد الأوروبي 33 كغ/م²، وحتى 39–42 بشروط تهوية ومراقبة صارمة. في الأجواء الحارة يُنصح بكثافة أقل (28–30).</p></div>'+
+    '<div class="card"><h2>🥣 المعالف والمشارب</h2><table><tr><th>البند</th><th>المعدل التقريبي</th></tr><tr><td>معلفة صحن</td><td>طبق لكل 50–70 طائر</td></tr><tr><td>معلفة طولية</td><td>2.5 سم لكل طائر</td></tr><tr><td>حلمات (نبل)</td><td>حلمة لكل 10–12 طائر</td></tr><tr><td>مشرب جرسي</td><td>مشرب لكل 80–100 طائر</td></tr></table></div>';
+  }
+  return h;
+}
+function calcVent(){const b=+vb.value,w=+vw.value,o=+vo.value,fc=+vf.value,t=+vt.value;const mn=minVent(b,w),mx=maxVent(b,w);const k=Math.min(1,Math.max(0,(o-(t-8))/12));const rec=mn+(mx-mn)*k;
+  vres.innerHTML='<div class="grid">'+kpi('التهوية الدنيا',fmt(mn)+' م³/س','مستمرة حتى في البرد')+kpi('التهوية القصوى (صيفاً)',fmt(mx)+' م³/س','≈ 6 م³/س لكل كغ')+kpi('المقترح الآن',fmt(rec)+' م³/س','حسب الحرارة الخارجية '+o+'°')+kpi('عدد المراوح',fmt(rec/fc,1),'تشغيل '+Math.ceil(rec/fc)+' مروحة')+'</div><p class="muted">السبب: الفرق بين الخارج ('+o+'°) والمطلوب ('+t+'°) يحدد نسبة التهوية بين الدنيا والقصوى. في البرد تُشغَّل الدنيا بمؤقت دوري (مثلاً دقيقة تشغيل من كل 5) بدل إيقافها.</p>'}
+function calcLight(){const a=+la.value,l=+ll.value,m=+lm.value,u=+lu.value;const n=Math.ceil(a*l/(m*u));lres.innerHTML='<div class="grid">'+kpi('عدد اللمبات',n,'لمبة '+m+' لومن')+kpi('اللومن الكلي',fmt(a*l/u),'')+'</div><p class="muted">المعادلة: المساحة × اللوكس ÷ (لومن اللمبة × معامل الاستفادة). وزّعها بانتظام وعلى ارتفاع ثابت.</p>'}
+function calcSpace(){const b=+sb.value,w=+sw.value,d=+sd.value,a=+sa.value;const need=b*w/d;let h='<div class="grid">'+kpi('المساحة المطلوبة',fmt(need)+' م²','لـ '+fmt(b)+' طائر')+kpi('الطيور لكل م²',fmt(d/w,1),'عند التسويق');
+  if(a){h+=kpi('أقصى عدد للمساحة',fmt(Math.floor(a*d/w)),'طائر على '+fmt(a)+' م²')+kpi('الكثافة الفعلية',fmt(b*w/a,1)+' كغ/م²',b*w/a>d?'⚠ تتجاوز الحد':'✓ ضمن الحد')}
+  sres.innerHTML=h+'</div>'}
+
+/* ---- الصحة ---- */
+function vHealth(){
+  const f=curFlock();let h=subTabs('health',[['diag','🔬 التشخيص'],['vacc','💉 التحصين والأدوية'],['sound','🎙️ الأصوات']]);
+  if(sub.health==='diag'){
+    h+='<div class="card"><h2>🔬 مساعد التشخيص</h2><div class="warnbox">النتائج احتمالات للمساعدة فقط، وليست تشخيصاً. القرار النهائي والعلاج للطبيب البيطري.</div><h3>الأعراض الخارجية</h3>'+Object.entries(SYM.ext).map(([k,n])=>'<label class="chk"><input type="checkbox" class="sy" value="'+k+'">'+n+'</label>').join('')+'<h3>نتائج التشريح</h3>'+Object.entries(SYM.nec).map(([k,n])=>'<label class="chk"><input type="checkbox" class="sy" value="'+k+'">'+n+'</label>').join('')+
+    '<label class="f" style="margin-top:10px">ملاحظات<textarea id="dn"></textarea></label><button class="btn full" onclick="runDiag()">تحليل الاحتمالات</button><div id="dres" style="margin-top:12px"></div></div>';
+    const D=f?S.diag.filter(d=>d.flockId===f.id).reverse():[];
+    if(D.length)h+='<div class="card"><h2>🗂️ سجل التشخيص</h2><div class="list">'+D.map(d=>'<div class="it"><b>'+d.date+'</b> • عمر '+d.age+'<div class="muted">'+d.sym.map(k=>SYM.ext[k]||SYM.nec[k]).join('، ')+'</div><div>الاحتمال الأعلى: '+(d.res[0]?d.res[0].n+' ('+d.res[0].sc+'%)':'—')+'</div>'+(d.vet?'<div class="tag ok">تشخيص الطبيب: '+esc(d.vet)+'</div>':'<button class="btn sm ghost" style="margin-top:5px" onclick="vetConfirm(\''+d.id+'\')">إضافة تشخيص الطبيب المؤكد</button>')+'</div>').join('')+'</div></div>';
+  }
+  if(sub.health==='vacc'){
+    if(!f)return h+noFlock();const age=ageOf(f);const V=S.vaccines.filter(v=>v.flockId===f.id).sort((a,b)=>a.day-b.day);
+    h+='<div class="card"><div class="row between"><h2>💉 برنامج التحصين</h2><button class="btn sm" onclick="vaccForm()">➕</button></div><div class="warnbox">البرنامج الافتراضي مثال عام. اعتمد البرنامج الذي يحدده طبيبك حسب منطقتك.</div><div class="list">'+(V.length?V.map(v=>'<div class="it row between"><div><b>يوم '+v.day+'</b> • '+esc(v.name)+'<div class="muted">'+esc(v.method)+(v.done?' • تم '+v.doneDate:'')+'</div></div>'+(v.done?'<span class="tag ok">✓ تم</span>':'<div class="row"><span class="tag '+(v.day<age?'bad':v.day-age<=1?'warn':'')+'">'+(v.day<age?'متأخر':v.day===age?'اليوم':'بعد '+(v.day-age)+' يوم')+'</span><button class="btn sm sec" onclick="vaccDone(\''+v.id+'\')">تم</button></div>')+'</div>').join(''):'<div class="empty">لا يوجد</div>')+'</div></div>';
+    const M=S.meds.filter(m=>m.flockId===f.id);
+    h+='<div class="card"><div class="row between"><h2>💊 الأدوية وفترات السحب</h2><button class="btn sm" onclick="medForm()">➕</button></div><div class="list">'+(M.length?M.map(m=>{const e=new Date(m.endDate);e.setDate(e.getDate()+(+m.withdrawal||0));const es=e.toISOString().slice(0,10);return'<div class="it"><b>'+esc(m.name)+'</b> <span class="muted">'+esc(m.dose||'')+'</span><div class="muted">'+m.startDate+' ← '+m.endDate+' • سحب '+m.withdrawal+' يوم • آمن للتسويق من '+es+'</div><span class="tag '+(es>today()?'warn':'ok')+'">'+(es>today()?'فترة سحب سارية':'انتهت فترة السحب')+'</span></div>'}).join(''):'<div class="empty">لا توجد أدوية مسجلة</div>')+'</div></div>';
+  }
+  if(sub.health==='sound'){
+    const SN=f?S.sounds.filter(s=>s.flockId===f.id).reverse():[];
+    h+='<div class="card"><h2>🎙️ تحليل أصوات القطيع <span class="tag info">تجريبي</span></h2><p class="muted">سجّل 30 ثانية في وقت هادئ وثابت يومياً (يُفضّل ليلاً بعد إطفاء الإضاءة) وفي المكان نفسه من العنبر. يقيس البرنامج الأصوات الحادة القصيرة (احتمال سعال/عطاس) ويقارنها بخط أساس دفعتك.</p><button class="btn full" id="recBtn" onclick="recSound()">🎙️ بدء تسجيل 30 ثانية</button><div id="recSt" class="muted" style="margin-top:8px"></div></div>'+
+    '<div class="card"><h2>📊 التسجيلات</h2>'+(SN.length?'<table><tr><th>التاريخ</th><th>عمر</th><th>شدة</th><th>حاد/د</th><th>حالة</th></tr>'+SN.map(s=>'<tr><td>'+s.date.slice(5)+'</td><td>'+s.age+'</td><td>'+fmt(s.rms,1)+'</td><td>'+fmt(s.peaksPerMin,1)+'</td><td>'+(s.flag?'<span class="tag warn">غير معتاد</span>':'<span class="tag ok">طبيعي</span>')+'</td></tr>').join('')+'</table>':'<div class="empty">لا توجد تسجيلات</div>')+'<p class="muted">يحتاج النظام 3 تسجيلات على الأقل لتكوين خط أساس.</p></div>';
+  }
+  return h;
+}
+function runDiag(){const sel=[...document.querySelectorAll('.sy:checked')].map(x=>x.value);if(!sel.length){toast('اختر عرضاً واحداً على الأقل');return}const f=curFlock();const age=f?ageOf(f):null;const res=diagnose(sel,age);
+  if(f){S.diag.push({id:uid(),flockId:f.id,date:today(),age,sym:sel,res,notes:dn.value});save()}
+  dres.innerHTML='<h3>الاحتمالات (للمراجعة البيطرية)</h3>'+(res.length?res.map(r=>'<div class="rec '+(r.sc>=50?'warn':'info')+'"><div class="row between"><span class="t">'+r.n+'</span><b>'+r.sc+'%</b></div><div class="bar" style="margin:6px 0"><i style="width:'+r.sc+'%"></i></div><div class="why">'+r.note+(r.age?' (العمر المعتاد '+r.age[0]+'–'+r.age[1]+' يوم)':'')+'</div></div>').join(''):'<div class="empty">لا يوجد تطابق</div>')+'<p class="muted">النسبة = مدى تطابق الأعراض المختارة مع الصورة النموذجية للمرض، مع خصم الأعراض غير المرتبطة وعمر الطيور. احفظ تشخيص الطبيب لاحقاً من السجل.</p>'}
+function vetConfirm(id){const d=S.diag.find(x=>x.id===id);sheet('تشخيص الطبيب المؤكد',inp('vet','التشخيص',d.vet||''),v=>{if(!v.vet)return false;d.vet=v.vet})}
+function vaccDone(id){const v=S.vaccines.find(x=>x.id===id);v.done=true;v.doneDate=today();save();render()}
+let recording=false;
+async function recSound(){
+  if(recording)return;const f=curFlock();if(!f){toast('أضف دفعة أولاً');return}
+  if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){recSt.textContent='الميكروفون غير متاح في هذا المتصفح';return}
+  let stream;try{stream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:false,noiseSuppression:false,autoGainControl:false}})}catch(e){recSt.textContent='لم يُسمح بالوصول للميكروفون';return}
+  recording=true;const ac=new (window.AudioContext||window.webkitAudioContext)();const src=ac.createMediaStreamSource(stream);const an=ac.createAnalyser();an.fftSize=2048;src.connect(an);
+  const buf=new Float32Array(an.fftSize),fbuf=new Float32Array(an.frequencyBinCount);const E=[],HF=[];const dur=30000,t0=Date.now();
+  recBtn.innerHTML='<span class="rec-dot"></span> جارٍ التسجيل...';
+  await new Promise(res=>{const iv=setInterval(()=>{an.getFloatTimeDomainData(buf);let s=0;for(const v of buf)s+=v*v;E.push(Math.sqrt(s/buf.length));an.getFloatFrequencyData(fbuf);let lo=0,hi=0;const binHz=ac.sampleRate/an.fftSize;for(let i=1;i<fbuf.length;i++){const p=Math.pow(10,fbuf[i]/10);if(i*binHz>2000)hi+=p;else lo+=p}HF.push(hi/(lo+hi+1e-12));const el=Date.now()-t0;recSt.textContent='الوقت المتبقي: '+Math.ceil((dur-el)/1000)+' ث';if(el>=dur){clearInterval(iv);res()}},50)});
+  stream.getTracks().forEach(t=>t.stop());ac.close();recording=false;
+  const sorted=[...E].sort((a,b)=>a-b);const med=sorted[Math.floor(sorted.length/2)]||1e-6;let peaks=0,inP=false;for(let i=0;i<E.length;i++){const hiE=E[i]>med*3.5&&E[i]>0.01;if(hiE&&!inP){peaks++;inP=true}else if(!hiE)inP=false}
+  const rms=20*Math.log10((E.reduce((a,b)=>a+b,0)/E.length)+1e-9)+100;const ppm=peaks/(dur/60000);const hf=HF.reduce((a,b)=>a+b,0)/HF.length;
+  const prev=S.sounds.filter(s=>s.flockId===f.id).slice(-7);const base=prev.length>=3?prev.reduce((a,s)=>a+s.peaksPerMin,0)/prev.length:null;
+  const flag=base!=null&&ppm>base*1.6+2;
+  S.sounds.push({id:uid(),flockId:f.id,date:today(),age:ageOf(f),duration:30,rms,peaksPerMin:ppm,hf,base,flag});save();
+  recSt.innerHTML='تم: '+fmt(ppm,1)+' صوت حاد/دقيقة'+(base!=null?' • خط الأساس '+fmt(base,1):' • يلزم '+(3-prev.length)+' تسجيل إضافي لخط الأساس')+(flag?' • <b style="color:#b45309">غير معتاد</b>':'');render();
+}
+
+/* ---- المزيد ---- */
+function vMore(){
+  let h=subTabs('more',[['fin','💰 المالية'],['cont','📇 الاتصالات'],['ai','🤖 الذكاء الاصطناعي'],['set','⚙️ الإعدادات']]);
+  const f=curFlock();const cur=S.settings.currency;
+  if(sub.more==='fin'){
+    if(!f)return h+noFlock();const F=S.finance.filter(x=>x.flockId===f.id).sort((a,b)=>a.date<b.date?1:-1);const st=stats(f);
+    const out=F.filter(x=>x.type==='out').reduce((s,x)=>s+(+x.amount),0),inc=F.filter(x=>x.type==='in').reduce((s,x)=>s+(+x.amount),0);
+    const cats={};F.filter(x=>x.type==='out').forEach(x=>cats[x.cat]=(cats[x.cat]||0)+(+x.amount));
+    const kg=f.status==='closed'&&+f.soldWeightKg?+f.soldWeightKg:st.biomass;
+    h+='<div class="card"><div class="row between"><h2>💰 السجل المالي - '+esc(f.name)+'</h2><button class="btn sm" onclick="finForm()">➕</button></div><div class="grid">'+kpi('المصاريف',fmt(out)+' '+cur,'')+kpi('الإيرادات',fmt(inc)+' '+cur,'')+kpi('صافي الربح',fmt(inc-out)+' '+cur,inc-out>=0?'ربح':'خسارة')+kpi('تكلفة الكيلو',kg?fmt(out/kg,2)+' '+cur:'—',fmt(kg)+' كغ '+(f.status==='closed'?'مباع':'تقديري'))+kpi('تكلفة الطائر',fmt(out/Math.max(1,f.count),2)+' '+cur,'')+kpi('حصة العلف',out?fmt((cats['علف']||0)/out*100,0)+'%':'—','من المصاريف')+'</div>'+
+    (Object.keys(cats).length?'<h3>توزيع المصاريف</h3>'+Object.entries(cats).sort((a,b)=>b[1]-a[1]).map(([c,v])=>'<div style="margin-bottom:6px"><div class="row between" style="font-size:13px"><span>'+esc(c)+'</span><span>'+fmt(v)+' '+cur+'</span></div><div class="bar"><i style="width:'+(v/out*100)+'%"></i></div></div>').join(''):'')+
+    '<h3>الحركات</h3><div class="list">'+(F.length?F.map(x=>'<div class="it row between"><div><b>'+esc(x.cat)+'</b> <span class="muted">'+x.date+(x.note?' • '+esc(x.note):'')+'</span></div><div class="row"><b style="color:'+(x.type==='in'?'#166534':'#b91c1c')+'">'+(x.type==='in'?'+':'−')+fmt(x.amount)+'</b><button class="btn sm ghost" onclick="finForm(\''+x.id+'\')">✎</button></div></div>').join(''):'<div class="empty">لا توجد حركات</div>')+'</div></div>';
+  }
+  if(sub.more==='cont'){
+    const roles=['طبيب بيطري','موزع علف','موزع أدوية','تاجر / مشتري','شركة استيراد','مفرخ / صيصان','معدات ومقاسات','أخرى'];
+    h+='<div class="card"><div class="row between"><h2>📇 دليل الاتصالات</h2><button class="btn sm" onclick="contForm()">➕</button></div>'+(S.contacts.length?roles.map(r=>{const C=S.contacts.filter(c=>c.role===r);return C.length?'<h3>'+r+'</h3><div class="list">'+C.map(c=>'<div class="it"><div class="row between"><b>'+esc(c.name)+'</b><div class="row">'+(c.phone?'<a class="btn sm sec" href="tel:'+esc(c.phone)+'">📞</a><a class="btn sm sec" href="https://wa.me/'+esc(c.phone.replace(/[^0-9]/g,''))+'">واتساب</a>':'')+'<button class="btn sm ghost" onclick="contForm(\''+c.id+'\')">✎</button></div></div><div class="muted">'+esc(c.phone||'')+(c.city?' • '+esc(c.city):'')+(c.notes?'<br>'+esc(c.notes):'')+'</div></div>').join('')+'</div>':''}).join(''):'<div class="empty">أضف الأطباء والموزعين والتجار وشركات الاستيراد</div>')+'</div>';
+  }
+  if(sub.more==='ai')h+=vAI();
+  if(sub.more==='set'){const s=S.settings;
+    h+='<div class="card"><h2>⚙️ الإعدادات</h2><label class="f">اسم المزرعة<input id="s_farm" value="'+esc(s.farm)+'"></label><div class="grid"><label class="f">العملة<input id="s_cur" value="'+esc(s.currency)+'"></label><label class="f">الكثافة القصوى كغ/م²<input id="s_md" type="number" value="'+s.maxDensity+'"></label><label class="f">وزن التسويق المستهدف (كغ)<input id="s_tw" type="number" step="0.1" value="'+s.targetWeight+'"></label><label class="f">قدرة المروحة م³/س<input id="s_fc" type="number" value="'+s.fanCap+'"></label></div><button class="btn full" onclick="saveSet()">حفظ</button></div>'+
+    '<div class="card"><h2>💾 النسخ الاحتياطي</h2><p class="muted">البيانات محفوظة على هذا الجهاز فقط. صدّر نسخة احتياطية أسبوعياً واحفظها في مكان آمن.</p><div class="row"><button class="btn" onclick="exportData()">⬇️ تصدير نسخة</button><label class="btn sec">⬆️ استيراد نسخة<input type="file" accept=".json,application/json" style="display:none" onchange="importData(this)"></label><button class="btn ghost" onclick="exportCSV()">📄 تصدير السجل CSV</button></div></div>'+
+    '<div class="card"><h2>⚠️ منطقة الخطر</h2><button class="btn bad" onclick="ask(\'حذف كل البيانات نهائياً؟ صدّر نسخة احتياطية أولاً.\',()=>ask(\'تأكيد أخير: لا يمكن التراجع.\',()=>{S=blank();save();render()}))">حذف كل البيانات</button></div><p class="muted" style="text-align:center">الإصدار 1.1</p>';
+  }
+  return h;
+}
+function vAI(){
+  const a=S.ai,v=aiV(),p=a.proposal;const closed=S.flocks.filter(f=>f.status==='closed').length;
+  const tbl=g=>{const ks=Object.keys(g||{});return ks.length?'<table><tr><th>الأسبوع</th>'+ks.map(k=>'<th>'+k+'</th>').join('')+'</tr><tr><td>معامل النمو</td>'+ks.map(k=>'<td>'+g[k]+'</td>').join('')+'</tr></table>':'<p class="muted">لا تعديلات (يستخدم المعيار العام)</p>'};
+  let h='<div class="card"><div class="row between"><h2>🤖 التحكم بالذكاء الاصطناعي</h2><label class="switch"><input type="checkbox" '+(a.enabled?'checked':'')+' onchange="S.ai.enabled=this.checked;aiLog(this.checked?\'تشغيل الذكاء الاصطناعي\':\'إيقاف الذكاء الاصطناعي\');save();render()"><span></span></label></div>'+
+  '<p class="muted">'+(a.enabled?'مفعّل: التوقعات والترتيب يستخدمان النموذج v'+a.active+'.':'متوقف: يعمل البرنامج بالمعايير العامة والقواعد الثابتة فقط.')+'</p>'+
+  '<div class="warnbox" style="background:#dbeafe;color:#1e3a8a">🔒 قواعد السيطرة: لا يتغير النموذج إلا بموافقتك • كل نسخة محفوظة ويمكن الرجوع إليها • التنبيهات الحرجة لا تُخفى أبداً • لا يتحكم بأي جهاز ولا يرسل بياناتك لأي جهة.</div></div>';
+  h+='<div class="card"><h2>📚 ماذا تعلّم؟ (v'+v.v+')</h2><p class="muted">'+esc(v.note)+'</p><h3>نمو مزرعتك مقارنة بالمعيار (1.00 = مطابق)</h3>'+tbl(v.growth)+'<h3>أولوية التوصيات حسب تقييمك</h3>'+(Object.keys(v.rulePri||{}).length?Object.entries(v.rulePri).map(([k,x])=>'<span class="tag '+(x>0?'ok':'warn')+'" style="margin:2px">'+k+': '+x+'</span>').join(''):'<p class="muted">لا يوجد بعد (يلزم 3 تقييمات لكل نوع)</p>')+'</div>';
+  h+='<div class="card"><h2>🔄 التعلم والتحديث</h2><p class="muted">الدفعات المغلقة: <b>'+closed+'</b> • التقييمات: <b>'+S.feedback.length+'</b>. كلما زادت الدفعات المغلقة بأوزان أسبوعية زادت دقة النموذج (الأفضل 5 دفعات فأكثر).</p>'+
+  (p?'<div class="rec info"><div class="t">اقتراح نموذج جديد بانتظار موافقتك</div><div class="why">مبني على <b>'+p.metrics.flocks+'</b> دفعة مغلقة. '+(p.metrics.test?'اختُبر على دفعة لم يتدرب عليها ('+esc(p.metrics.test)+'):':'')+'<br>متوسط خطأ توقع الوزن بالمعيار العام: <b>'+fmt(p.metrics.stdErr,1)+'%</b><br>متوسط خطأ النموذج الجديد: <b>'+fmt(p.metrics.newErr,1)+'%</b>'+(p.metrics.note?'<br>'+p.metrics.note:'')+'</div>'+tbl(p.growth)+'<div class="row" style="margin-top:8px"><button class="btn" onclick="approveModel()">✅ اعتماد</button><button class="btn bad" onclick="rejectModel()">✖ رفض</button></div>'+(p.metrics.newErr>p.metrics.stdErr?'<p style="color:#b91c1c;font-size:13px">⚠ النموذج الجديد أقل دقة من المعيار. يُنصح بالرفض.</p>':'')+'</div>':'<button class="btn full" onclick="proposeModel()">🧠 تدريب واقتراح نموذج جديد</button>')+'</div>';
+  h+='<div class="card"><h2>🗃️ النسخ</h2><div class="list">'+a.versions.slice().reverse().map(x=>'<div class="it row between"><div><b>v'+x.v+'</b> <span class="muted">'+x.date+'</span><div class="muted">'+esc(x.note)+(x.metrics&&x.metrics.newErr!=null?' • خطأ '+fmt(x.metrics.newErr,1)+'%':'')+'</div></div>'+(x.v===a.active?'<span class="tag ok">نشطة</span>':'<button class="btn sm ghost" onclick="S.ai.active='+x.v+';aiLog(\'الرجوع إلى v'+x.v+'\');save();render()">تفعيل</button>')+'</div>').join('')+'</div></div>';
+  h+='<div class="card"><h2>📜 سجل القرارات</h2>'+(a.log.length?'<div class="list">'+a.log.slice(0,30).map(l=>'<div class="it muted">'+l.d+' — '+esc(l.t)+'</div>').join('')+'</div>':'<div class="empty">لا يوجد</div>')+'</div>';
+  return h;
+}
+function saveSet(){const s=S.settings;s.farm=s_farm.value;s.currency=s_cur.value||'₪';s.maxDensity=+s_md.value||33;s.targetWeight=+s_tw.value||2.2;s.fanCap=+s_fc.value||20000;save();toast('تم الحفظ');render()}
+
+/* ============ النماذج (Forms) ============ */
+function sheet(title,body,onSave,onDel){const m=document.createElement('div');m.className='modal';m.innerHTML='<div class="sheet"><h2>'+title+'</h2>'+body+'<div class="row" style="margin-top:8px"><button class="btn" id="m_ok">حفظ</button><button class="btn ghost" id="m_x">إلغاء</button>'+(onDel?'<button class="btn bad" id="m_del" style="margin-inline-start:auto">حذف</button>':'')+'</div></div>';document.body.appendChild(m);
+  const close=()=>m.remove();m.onclick=e=>{if(e.target===m)close()};m.querySelector('#m_x').onclick=close;m.querySelector('#m_ok').onclick=()=>{const v={};m.querySelectorAll('[data-k]').forEach(i=>v[i.dataset.k]=i.type==='checkbox'?i.checked:i.value);if(onSave(v)!==false){save();close();render()}};if(onDel)m.querySelector('#m_del').onclick=()=>ask('تأكيد الحذف؟',()=>{onDel();save();close();render()})}
+function ask(msg,yes){const m=document.createElement('div');m.className='modal';m.style.alignItems='center';m.innerHTML='<div class="sheet" style="border-radius:18px;max-width:380px;margin:16px"><p style="margin:0 0 14px;font-size:15.5px">'+msg+'</p><div class="row"><button class="btn bad" id="a_y">نعم</button><button class="btn ghost" id="a_n">لا</button></div></div>';document.body.appendChild(m);m.querySelector('#a_n').onclick=()=>m.remove();m.querySelector('#a_y').onclick=()=>{m.remove();yes()}}
+const inp=(k,l,v,t='text',x='')=>'<label class="f">'+l+'<input data-k="'+k+'" type="'+t+'" value="'+esc(v==null?'':v)+'" '+x+'></label>';
+const selI=(k,l,v,opts)=>'<label class="f">'+l+'<select data-k="'+k+'">'+opts.map(o=>{const[a,b]=Array.isArray(o)?o:[o,o];return'<option value="'+esc(a)+'"'+(a==v?' selected':'')+'>'+esc(b)+'</option>'}).join('')+'</select></label>';
+function flockForm(id){const f=id?fl(id):{name:'دفعة '+(S.flocks.length+1),breed:'ross308',startDate:today(),count:10000,area:'',house:''};
+  sheet(id?'تعديل الدفعة':'دفعة جديدة',inp('name','اسم الدفعة',f.name)+'<div class="grid">'+selI('breed','السلالة',f.breed,Object.entries(BREEDS).map(([k,b])=>[k,b.name]))+inp('startDate','تاريخ الاستلام (يوم 0)',f.startDate,'date')+inp('count','عدد الصيصان',f.count,'number')+inp('area','مساحة العنبر م²',f.area,'number')+'</div>'+inp('house','العنبر / مصدر الصيصان',f.house)+(id?'':'<label class="chk"><input type="checkbox" data-k="vacc" checked>إضافة برنامج التحصين الافتراضي</label>'),
+  v=>{if(!v.name||!v.startDate||!(+v.count>0)){toast('أكمل الاسم والتاريخ والعدد');return false}v.count=+v.count;v.area=+v.area||0;
+    if(id){Object.assign(f,{name:v.name,breed:v.breed,startDate:v.startDate,count:v.count,area:v.area,house:v.house})}
+    else{const n={id:uid(),name:v.name,breed:v.breed,startDate:v.startDate,count:v.count,area:v.area,house:v.house,status:'active'};S.flocks.push(n);S.cur=n.id;if(v.vacc)S.settings.vaccTpl.forEach(t=>S.vaccines.push({id:uid(),flockId:n.id,day:t.day,name:t.name,method:t.method,done:false}))}},
+  id?()=>{S.flocks=S.flocks.filter(x=>x.id!==id);['logs','vaccines','meds','finance','diag','sounds'].forEach(k=>S[k]=S[k].filter(x=>x.flockId!==id));S.cur=null}:null)}
+function closeForm(id){const f=fl(id);const st=stats(f);sheet('إغلاق الدفعة وتسويقها','<p class="muted">بعد الإغلاق تدخل بيانات الدفعة في تدريب الذكاء الاصطناعي.</p><div class="grid">'+inp('endDate','تاريخ التسويق',today(),'date')+inp('soldBirds','عدد الطيور المباعة',st.live,'number')+inp('soldWeightKg','الوزن الحي المباع كغ',Math.round(st.live*st.estW/1000),'number')+inp('price','سعر الكيلو (اختياري)','','number','step="0.01"')+'</div>',
+  v=>{f.status='closed';f.endDate=v.endDate;f.soldBirds=0;f.soldCount=+v.soldBirds;f.soldWeightKg=+v.soldWeightKg;if(+v.price)S.finance.push({id:uid(),flockId:id,date:v.endDate,type:'in',cat:'بيع طيور',amount:Math.round(v.price*v.soldWeightKg),note:fmt(v.soldWeightKg)+' كغ × '+v.price});aiLog('إغلاق دفعة '+f.name+' — جاهزة للتدريب');toast('أُغلقت الدفعة. يمكنك تدريب النموذج من قسم الذكاء الاصطناعي')})}
+function logForm(id){const f=curFlock();const l=id?S.logs.find(x=>x.id===id):{date:today()};const age=ageOf(f,l.date);
+  sheet(id?'تعديل السجل':'سجل يومي - عمر '+age+' يوم',inp('date','التاريخ',l.date,'date')+'<div class="grid">'+inp('dead','النفوق',l.dead,'number','inputmode="numeric"')+inp('culled','المستبعد (فرز)',l.culled,'number')+inp('feedKg','العلف المستهلك كغ',l.feedKg,'number','step="0.1"')+inp('waterL','الماء لتر',l.waterL,'number','step="0.1"')+inp('tempC','الحرارة °C (المطلوب '+targetTemp(age)+')',l.tempC,'number','step="0.1"')+inp('humidity','الرطوبة %',l.humidity,'number')+inp('avgWeightG','متوسط وزن العينة غ',l.avgWeightG,'number')+inp('lightHours','ساعات الضوء',l.lightHours,'number','step="0.5"')+inp('lux','شدة الإضاءة لوكس',l.lux,'number')+'</div><label class="f">ملاحظات<textarea data-k="notes">'+esc(l.notes||'')+'</textarea></label>',
+  v=>{if(!v.date)return false;if(id)Object.assign(l,v);else{const ex=S.logs.find(x=>x.flockId===f.id&&x.date===v.date);if(ex){Object.assign(ex,v);toast('تم تحديث سجل هذا التاريخ');return}else S.logs.push(Object.assign({id:uid(),flockId:f.id},v))}toast('تم الحفظ')},
+  id?()=>{S.logs=S.logs.filter(x=>x.id!==id)}:null)}
+function vaccForm(){const f=curFlock();sheet('إضافة تحصين','<div class="grid">'+inp('day','يوم العمر','','number')+inp('name','اللقاح','')+'</div>'+inp('method','الطريقة','ماء شرب'),v=>{if(!v.name||v.day==='')return false;S.vaccines.push({id:uid(),flockId:f.id,day:+v.day,name:v.name,method:v.method,done:false})})}
+function medForm(){const f=curFlock();sheet('إضافة دواء',inp('name','اسم الدواء / المادة الفعالة','')+inp('dose','الجرعة','')+'<div class="grid">'+inp('startDate','من',today(),'date')+inp('endDate','إلى',today(),'date')+inp('withdrawal','فترة السحب (أيام)','5','number')+inp('cost','التكلفة (تُضاف للمصاريف)','','number')+'</div>'+inp('reason','السبب / وصفة الطبيب',''),v=>{if(!v.name)return false;S.meds.push(Object.assign({id:uid(),flockId:f.id},v));if(+v.cost)S.finance.push({id:uid(),flockId:f.id,date:v.startDate,type:'out',cat:'أدوية ولقاحات',amount:+v.cost,note:v.name})})}
+function finForm(id){const f=curFlock();const x=id?S.finance.find(a=>a.id===id):{date:today(),type:'out',cat:'علف'};
+  sheet(id?'تعديل حركة':'حركة مالية','<div class="grid">'+selI('type','النوع',x.type,[['out','مصروف'],['in','إيراد']])+selI('cat','البند',x.cat,['صيصان','علف','أدوية ولقاحات','تدفئة وغاز','كهرباء','فرشة','عمالة','إيجار','صيانة ومعدات','نقل','بيع طيور','بيع سماد','أخرى'])+inp('amount','المبلغ',x.amount,'number','step="0.01"')+inp('date','التاريخ',x.date,'date')+'</div>'+inp('note','ملاحظة',x.note),
+  v=>{if(!(+v.amount>0))return false;v.amount=+v.amount;if(id)Object.assign(x,v);else S.finance.push(Object.assign({id:uid(),flockId:f.id},v))},id?()=>{S.finance=S.finance.filter(a=>a.id!==id)}:null)}
+function contForm(id){const c=id?S.contacts.find(a=>a.id===id):{role:'طبيب بيطري'};
+  sheet(id?'تعديل جهة اتصال':'جهة اتصال جديدة',inp('name','الاسم / الشركة',c.name)+selI('role','التصنيف',c.role,['طبيب بيطري','موزع علف','موزع أدوية','تاجر / مشتري','شركة استيراد','مفرخ / صيصان','معدات ومقاسات','أخرى'])+'<div class="grid">'+inp('phone','الهاتف',c.phone,'tel')+inp('city','المدينة',c.city)+'</div><label class="f">ملاحظات (أسعار، مقاسات، منتجات)<textarea data-k="notes">'+esc(c.notes||'')+'</textarea></label>',
+  v=>{if(!v.name)return false;if(id)Object.assign(c,v);else S.contacts.push(Object.assign({id:uid()},v))},id?()=>{S.contacts=S.contacts.filter(a=>a.id!==id)}:null)}
+
+/* ============ تصدير/استيراد ============ */
+function saveFile(name,text,mime){if(window.Android&&Android.saveFile){const r=Android.saveFile(name,text);toast(r||'تم الحفظ في التنزيلات');return}const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([text],{type:mime}));a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},500)}
+function exportData(){saveFile('broiler-backup-'+today()+'.json',JSON.stringify(S),'application/json')}
+function exportCSV(){const rows=[['الدفعة','التاريخ','العمر','نفوق','فرز','علف كغ','ماء ل','حرارة','رطوبة','وزن غ','ساعات ضوء','لوكس','ملاحظات']];for(const l of [...S.logs].sort((a,b)=>a.date<b.date?-1:1)){const f=fl(l.flockId);if(!f)continue;rows.push([f.name,l.date,ageOf(f,l.date),l.dead,l.culled,l.feedKg,l.waterL,l.tempC,l.humidity,l.avgWeightG,l.lightHours,l.lux,l.notes])}saveFile('broiler-log-'+today()+'.csv','﻿'+rows.map(r=>r.map(c=>'"'+String(c==null?'':c).replace(/"/g,'""')+'"').join(',')).join('\n'),'text/csv')}
+function importData(el){const file=el.files[0];if(!file)return;const r=new FileReader();r.onload=()=>{try{const d=JSON.parse(r.result);if(!d.flocks||!d.logs)throw 0;ask('سيتم استبدال البيانات الحالية بالنسخة المستوردة. متابعة؟',()=>{S=d;const b=blank();for(const k in b)if(S[k]===undefined)S[k]=b[k];for(const k in b.settings)if(S.settings[k]===undefined)S.settings[k]=b.settings[k];save();toast('تم الاستيراد');render()})}catch(e){toast('ملف غير صالح')}};r.readAsText(file)}
+
+/* ============ المراقبة بالكاميرا ============ */
+const GW=8,GH=6,AW=160,AH=120;
+const CELL=(()=>{const a=new Uint8Array(AW*AH);for(let i=0;i<AW*AH;i++){const x=i%AW,y=(i/AW)|0;a[i]=Math.floor(y*GH/AH)*GW+Math.floor(x*GW/AW)}return a})();
+const ZONES={'':['—',''],feed:['معلف','#f59e0b'],water:['مشرب','#3b82f6'],x:['مستبعد','#64748b']};
+const camStreams={},camHist={},lastRes={};
+let monTimer=null,monBusy=false,camSel=null,photoRes=null;
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+const hm=t=>{const d=new Date(t);return d.toTimeString().slice(0,5)};
+
+async function phoneFrame(c){
+  let o=camStreams[c.id];
+  if(!o||!o.stream.active){
+    if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia)throw new Error('الكاميرا غير متاحة هنا');
+    const v0={width:{ideal:640},height:{ideal:480}};
+    const stream=await navigator.mediaDevices.getUserMedia({audio:false,video:c.deviceId?Object.assign({deviceId:{exact:c.deviceId}},v0):Object.assign({facingMode:{ideal:c.facing||'environment'}},v0)});
+    const v=document.createElement('video');v.muted=true;v.playsInline=true;v.srcObject=stream;await v.play();await sleep(900);
+    o=camStreams[c.id]={stream,video:v};
+  }
+  return o.video;
+}
+function stopStream(id){const o=camStreams[id];if(o){o.stream.getTracks().forEach(t=>t.stop());delete camStreams[id]}}
+async function urlFrame(c){
+  let src;
+  if(window.Android&&Android.fetchImage){const r=Android.fetchImage(c.url,c.user||'',c.pass||'');if(!r||r.indexOf('ERR')===0)throw new Error(r?r.slice(4):'لا استجابة');src=r}
+  else src=c.url+(c.url.includes('?')?'&':'?')+'_t='+Date.now();
+  const img=new Image();img.crossOrigin='anonymous';
+  await new Promise((res,rej)=>{img.onload=res;img.onerror=()=>rej(new Error('تعذر تحميل الصورة من الرابط'));img.src=src});
+  return img;
+}
+function toGray(el){const cv=document.createElement('canvas');cv.width=AW;cv.height=AH;const x=cv.getContext('2d',{willReadFrequently:true});x.drawImage(el,0,0,AW,AH);
+  let d;try{d=x.getImageData(0,0,AW,AH).data}catch(e){throw new Error('الكاميرا لا تسمح بقراءة الصورة (استخدم التطبيق APK)')}
+  const g=new Uint8Array(AW*AH);for(let i=0;i<g.length;i++)g[i]=(d[i*4]*77+d[i*4+1]*150+d[i*4+2]*29)>>8;return{g,cv}}
+async function grab(c){return toGray(c.type==='phone'?await phoneFrame(c):await urlFrame(c))}
+function otsu(g,inc){const h=new Array(256).fill(0);let n=0;for(let i=0;i<g.length;i++)if(inc[CELL[i]]){h[g[i]]++;n++}
+  let sum=0;for(let t=0;t<256;t++)sum+=t*h[t];let sB=0,wB=0,best=0,th=128;for(let t=0;t<256;t++){wB+=h[t];if(!wB)continue;const wF=n-wB;if(!wF)break;sB+=t*h[t];const mB=sB/wB,mF=(sum-sB)/wF;const v=wB*wF*(mB-mF)*(mB-mF);if(v>best){best=v;th=t}}return th}
+function analyze(c,A,B){
+  const z=c.zones||{};const inc=[];for(let k=0;k<GW*GH;k++)inc[k]=z[k]!=='x';
+  let bs=0,bn=0;for(let i=0;i<A.g.length;i++)if(inc[CELL[i]]){bs+=B.g[i];bn++}
+  const bright=bn?bs/bn:0;const th=otsu(B.g,inc);
+  const cov=new Array(GW*GH).fill(0),mot=new Array(GW*GH).fill(0),cnt=new Array(GW*GH).fill(0);let mt=0,ct=0;
+  for(let i=0;i<A.g.length;i++){const k=CELL[i];if(!inc[k])continue;cnt[k]++;ct++;const b=c.invert?B.g[i]<th:B.g[i]>th;if(b)cov[k]++;if(A&&A!==B&&Math.abs(A.g[i]-B.g[i])>25){mot[k]++;mt++}}
+  const covF=cov.map((v,k)=>cnt[k]?v/cnt[k]:null),motF=mot.map((v,k)=>cnt[k]?v/cnt[k]:null);
+  const cells=covF.filter(v=>v!=null);const mean=cells.reduce((a,b)=>a+b,0)/Math.max(1,cells.length);
+  const sd=Math.sqrt(cells.reduce((a,b)=>a+(b-mean)*(b-mean),0)/Math.max(1,cells.length));
+  const empty=cells.filter(v=>v<mean*0.3).length/Math.max(1,cells.length);
+  const zr=t=>{const ks=Object.keys(z).filter(k=>z[k]===t);if(!ks.length||mean<0.03)return null;return ks.reduce((a,k)=>a+(covF[k]||0),0)/ks.length/mean};
+  return{bright:+bright.toFixed(1),th,cov:+(mean*100).toFixed(1),cv:+(mean?sd/mean:0).toFixed(2),empty:+empty.toFixed(2),act:A===B?null:+(mt/Math.max(1,ct)*100).toFixed(2),feed:zr('feed'),water:zr('water'),covF,motF};
+}
+function isLight(c,L,now){const[h,m]=(c.lightsOn||'05:00').split(':').map(Number);const d=new Date(now);const mins=((d.getHours()*60+d.getMinutes())-(h*60+m)+1440)%1440;return mins<L*60}
+function hourBase(c,hour){const lim=Date.now()-7*86400000;const v=S.camSamples.filter(s=>s.cam===c.id&&s.hour===hour&&s.t>lim&&s.act!=null).map(s=>s.act).sort((a,b)=>a-b);return{n:v.length,med:v.length?v[Math.floor(v.length/2)]:null}}
+function camRules(c,r,now){
+  const out=[];const add=(type,sev,title,why,act)=>out.push({type,sev,title,why,act});
+  const f=fl(c.flockId)||curFlock();const age=f?ageOf(f):null;const lp=age!=null?lightProg(age):null;const light=lp?isLight(c,lp.L,now):true;
+  const sens=S.camCfg.sens;const ll=f?flockLogs(f).slice(-1)[0]:null;const tT=age!=null?targetTemp(age):null;const tN=ll&&+ll.tempC&&ll.date>=new Date(now-86400000).toISOString().slice(0,10)?+ll.tempC:null;
+  if(r.bright<15&&light)add('dark','bad','الإضاءة مطفأة في وقت الضوء','سطوع الصورة <b>'+r.bright+'</b> من 255، وحسب برنامج الإضاءة ('+(lp?lp.L:'?')+' ساعة ضوء تبدأ '+(c.lightsOn||'05:00')+') يجب أن تكون مضاءة.','افحص الكهرباء والمؤقت واللمبات. انقطاع الضوء يوقف الأكل والشرب.');
+  if(lp&&!light&&r.bright>70)add('lighton','warn','الإضاءة تعمل في وقت العتمة','سطوع الصورة <b>'+r.bright+'</b> والمفروض الآن فترة عتمة ('+lp.D+' ساعة).','اضبط مؤقت الإضاءة. العتمة ضرورية للأرجل والمناعة.');
+  if(r.bright<15)return out;
+  if(r.cov>3&&r.cv>sens.cluster&&r.empty>0.3){
+    const cold=tN!=null&&tT!=null&&tN<tT-1;
+    add('cluster','warn',cold?'تجمّع الطيور: علامة برد':'تجمّع غير طبيعي للطيور','مؤشر التجمع <b>'+r.cv+'</b> (الحد '+fmt(sens.cluster,2)+') و<b>'+Math.round(r.empty*100)+'%</b> من الأرضية شبه فارغة.'+(tN!=null?' الحرارة المسجلة '+tN+'° والمطلوب '+tT+'°.':''),cold?'ارفع التدفئة وخفّض التهوية إلى الحد الأدنى، وافحص التيارات الهوائية الباردة.':'افحص المكان الفارغ: تيار هواء، أو تسرب ماء، أو فرشة مبتلة، أو إضاءة غير متساوية.');
+  }
+  if(light&&r.feed!=null&&r.feed<sens.zone)add('feed','warn','قلة الطيور عند المعالف','كثافة الطيور عند المعالف <b>'+Math.round(r.feed*100)+'%</b> من متوسط العنبر (الحد '+Math.round(sens.zone*100)+'%) في وقت الضوء.','افحص وصول العلف للمعالف وخط التوزيع وارتفاع المعالف.');
+  if(light&&r.water!=null&&r.water<sens.zone)add('water','bad','قلة الطيور عند المشارب','كثافة الطيور عند المشارب <b>'+Math.round(r.water*100)+'%</b> من متوسط العنبر في وقت الضوء.','افحص ضغط الماء والحلمات والفلاتر فوراً. انقطاع الماء أخطر من انقطاع العلف.');
+  if(S.ai.enabled&&r.act!=null){const b=hourBase(c,new Date(now).getHours());
+    if(b.n>=5&&b.med>0.15){
+      if(light&&r.act<b.med*sens.lowact)add('lowact','warn','نشاط منخفض عن المعتاد','حركة القطيع <b>'+r.act+'%</b> والمعتاد في هذه الساعة <b>'+fmt(b.med,2)+'%</b> (من '+b.n+' قراءة خلال 7 أيام).','الخمول قد يكون أول علامة مرض أو حر. افحص الطيور، وقارن مع العلف والماء والحرارة.');
+      if(r.act>b.med*sens.highact&&r.act>1.5)add('highact','warn','حركة واضطراب غير معتادين','حركة القطيع <b>'+r.act+'%</b> أي '+fmt(r.act/b.med,1)+' أضعاف المعتاد لهذه الساعة.','افحص وجود حيوان مفترس أو قوارض أو ضجيج أو عامل بالعنبر، أو انقطاع العلف أو الماء.');
+    }
+  }
+  if(tN!=null&&tT!=null&&tN>tT+3&&r.act!=null&&r.act<0.4&&r.cv<0.7)add('heat','bad','احتمال إجهاد حراري','الحرارة المسجلة <b>'+tN+'°</b> (المطلوب '+tT+'°) مع حركة منخفضة <b>'+r.act+'%</b> وانتشار الطيور على الأرضية.','زد التهوية والتبريد فوراً، ووفّر ماء بارداً مع إلكتروليتات، ولا تزعج الطيور.');
+  const H=camHist[c.id]||[];if(H.length>=8){const ms=H.reduce((a,h)=>a+(h.act||0),0)/H.length;if(ms>0.3){const st=[];for(let k=0;k<GW*GH;k++){if((c.zones||{})[k]==='x')continue;const cv=H.reduce((a,h)=>a+(h.covF[k]||0),0)/H.length;const mx=Math.max(...H.map(h=>h.motF[k]||0));if(cv>0.35&&mx<0.003)st.push(k+1)}
+    if(st.length&&st.length<=4)add('static','info','منطقة فيها طيور بلا حركة','الخانات <b>'+st.join('، ')+'</b> فيها طيور لم تتحرك خلال آخر '+H.length+' فحوصات، بينما باقي القطيع يتحرك.','افحص المكان: قد تكون طيور نافقة أو ضعيفة أو عالقة. (قد تكون أيضاً معدات ثابتة، فاستبعد خاناتها).')}}
+  return out;
+}
+async function checkCam(c,manual){
+  const now=Date.now();
+  try{
+    const A=await grab(c);await sleep(1500);const B=await grab(c);
+    const r=analyze(c,A,B);const snap=B.cv.toDataURL('image/jpeg',0.75);
+    lastRes[c.id]={r,snap,t:now};c.lastOk=now;
+    if(r.bright>=15){(camHist[c.id]=camHist[c.id]||[]).push({act:r.act,covF:r.covF,motF:r.motF});if(camHist[c.id].length>10)camHist[c.id].shift()}
+    S.camSamples.push({cam:c.id,t:now,hour:new Date(now).getHours(),act:r.act,cov:r.cov,cv:r.cv,empty:r.empty,bright:r.bright,feed:r.feed,water:r.water});
+    if(S.camSamples.length>4000)S.camSamples=S.camSamples.slice(-4000);
+    for(const a of camRules(c,r,now))raiseCam(c,a,snap,now);
+  }catch(e){
+    lastRes[c.id]={err:e.message||String(e),t:now};
+    if(!manual)raiseCam(c,{type:'offline',sev:'bad',title:'الكاميرا لا تستجيب',why:'الخطأ: <b>'+esc(e.message||e)+'</b>. آخر صورة ناجحة: '+(c.lastOk?hm(c.lastOk):'لا يوجد')+'.',act:'افحص الكهرباء والشبكة وعنوان الكاميرا. توقف الكاميرا قد يعني انقطاع كهرباء في العنبر.'},null,now);
+  }finally{if(S.cams.filter(x=>x.type==='phone'&&x.enabled).length>1||!S.camCfg.on)stopStream(c.id)}
+}
+function raiseCam(c,a,snap,now){
+  const key=c.id+'_'+a.type;const cool=S.camCfg.cool[key]||0;if(now-cool<30*60000)return;
+  S.camCfg.cool[key]=now;
+  S.camAlerts.unshift({id:uid(),cam:c.id,camName:c.name,flockId:c.flockId||null,t:now,type:a.type,sev:a.sev,title:a.title,why:a.why,act:a.act,snap:snap?shrink(snap):null,fb:null});
+  S.camAlerts=S.camAlerts.slice(0,80);
+  if(a.sev!=='info'&&window.Android&&Android.notify)try{Android.notify('📷 '+c.name+': '+a.title,a.why.replace(/<[^>]+>/g,'')+' — '+a.act)}catch(e){}
+}
+function shrink(u){return u}
+async function monCycle(){if(monBusy)return;monBusy=true;try{for(const c of S.cams.filter(c=>c.enabled))await checkCam(c)}finally{monBusy=false;save();if(tab==='cam')render()}}
+function startMon(){S.camCfg.on=true;clearInterval(monTimer);monTimer=setInterval(monCycle,S.camCfg.interval*60000);if(window.Android&&Android.keepScreenOn)Android.keepScreenOn(true);save();monCycle();render()}
+function stopMon(){S.camCfg.on=false;clearInterval(monTimer);monTimer=null;Object.keys(camStreams).forEach(stopStream);if(window.Android&&Android.keepScreenOn)Android.keepScreenOn(false);save();render()}
+async function checkNow(id){const c=S.cams.find(x=>x.id===id);toast('جارٍ الفحص...');await checkCam(c,true);save();render();const l=lastRes[id];if(l&&l.err)toast(l.err)}
+async function analyzePhoto(el){const file=el.files[0];if(!file)return;const c=S.cams.find(x=>x.id===camSel)||{id:'photo',name:'صورة',zones:{}};
+  const img=new Image();img.src=URL.createObjectURL(file);await new Promise(r=>img.onload=r);const B=toGray(img);const r=analyze(c,B,B);
+  lastRes[c.id]={r,snap:B.cv.toDataURL('image/jpeg',0.8),t:Date.now(),photo:true,rules:camRules(c,r,Date.now()).filter(a=>!['lowact','highact','heat','static'].includes(a.type))};if(c.id==='photo')photoRes=lastRes.photorender()}
+
+function camFeedback(id,ok){const a=S.camAlerts.find(x=>x.id===id);a.fb=ok?'ok':'false';save();toast(ok?'سُجّل كتنبيه صحيح':'سُجّل كإنذار كاذب، سيُقترح ضبط الحساسية بعد موافقتك');render()}
+const SENS_MAP={cluster:'cluster',lowact:'lowact',highact:'highact',feed:'zone',water:'zone'};
+const SENS_NAME={cluster:'حد مؤشر التجمع',lowact:'حد النشاط المنخفض (نسبة من المعتاد)',highact:'حد النشاط المرتفع (أضعاف المعتاد)',zone:'حد قلة الطيور عند المعالف والمشارب'};
+const LOOSER={cluster:1.15,lowact:0.85,highact:1.15,zone:0.85};
+function proposeCamSens(){
+  const st={};for(const a of S.camAlerts){const k=SENS_MAP[a.type];if(!k||!a.fb)continue;st[k]=st[k]||{ok:0,f:0};a.fb==='ok'?st[k].ok++:st[k].f++}
+  const cur=S.camCfg.sens,nw=Object.assign({},cur),why={};
+  for(const k in st){const t=st[k].ok+st[k].f;if(t<5)continue;const fr=st[k].f/t;
+    if(fr>0.5){nw[k]=+(cur[k]*LOOSER[k]).toFixed(2);why[k]='إنذارات كاذبة '+Math.round(fr*100)+'% من '+t+' ← تخفيف الحساسية'}
+    else if(fr<0.1&&t>=8){nw[k]=+(cur[k]/Math.pow(LOOSER[k],0.4)).toFixed(2);why[k]='دقة '+Math.round((1-fr)*100)+'% من '+t+' ← زيادة الحساسية قليلاً'}}
+  if(!Object.keys(why).length){toast('لا يكفي التقييم بعد (5 تقييمات على الأقل لكل نوع تنبيه)');return}
+  S.camCfg.proposal={date:today(),sens:nw,why};aiLog('اقتراح ضبط حساسية الكاميرات');save();render()}
+function approveCamSens(){const p=S.camCfg.proposal;S.camCfg.history=S.camCfg.history||[];S.camCfg.history.push({date:today(),sens:Object.assign({},S.camCfg.sens)});S.camCfg.sens=p.sens;S.camCfg.proposal=null;aiLog('اعتماد حساسية كاميرات جديدة');save();toast('تم الاعتماد');render()}
+function undoCamSens(){const h=(S.camCfg.history||[]).pop();if(!h)return;S.camCfg.sens=h.sens;aiLog('الرجوع لحساسية الكاميرات السابقة');save();render()}
+
+function overlayHTML(c,res){if(!res||!res.snap)return'';const z=(c&&c.zones)||{};const r=res.r;
+  let cells='';for(let k=0;k<GW*GH;k++){const v=r.covF[k];const zz=z[k];const col=zz==='x'?'rgba(100,116,139,.55)':v==null?'transparent':'rgba(22,101,52,'+Math.min(0.55,v*0.9).toFixed(2)+')';
+    cells+='<div style="background:'+col+';border:1px solid rgba(255,255,255,.25);font-size:9px;color:#fff;padding:1px 2px;text-shadow:0 0 2px #000">'+(k+1)+(zz&&zz!=='x'?' '+ZONES[zz][0]:'')+'</div>'}
+  return'<div style="position:relative;border-radius:12px;overflow:hidden" dir="ltr"><img src="'+res.snap+'" style="width:100%;display:block"><div style="position:absolute;inset:0;display:grid;grid-template-columns:repeat('+GW+',1fr);grid-template-rows:repeat('+GH+',1fr)">'+cells+'</div></div>'}
+function resKpis(r){return'<div class="grid3" style="margin-top:8px">'+kpi('النشاط',r.act==null?'—':r.act+'%','نسبة البكسلات المتحركة')+kpi('التجمع',r.cv,'0.3 منتشر • >'+fmt(S.camCfg.sens.cluster,2)+' متجمع')+kpi('السطوع',Math.round(r.bright),'من 255')+kpi('الأرضية الفارغة',Math.round(r.empty*100)+'%','')+kpi('عند المعالف',r.feed==null?'—':Math.round(r.feed*100)+'%','من المتوسط')+kpi('عند المشارب',r.water==null?'—':Math.round(r.water*100)+'%','من المتوسط')+'</div>'}
+function actChart(c){const now=Date.now(),d0=new Date();d0.setHours(0,0,0,0);
+  const tdy=[],base=[];for(let h=0;h<24;h++){const v=S.camSamples.filter(s=>s.cam===c.id&&s.hour===h&&s.t>=d0.getTime()&&s.act!=null).map(s=>s.act);tdy.push(v.length?v.reduce((a,b)=>a+b,0)/v.length:null);base.push(hourBase(c,h).med)}
+  const mx=Math.max(0.5,...tdy.filter(v=>v!=null),...base.filter(v=>v!=null))*1.1;const W=340,H=120,bw=(W-20)/24;
+  let s='';for(let h=0;h<24;h++){const x=10+h*bw;if(base[h]!=null)s+='<rect x="'+(x+1)+'" y="'+(H-18-(H-28)*base[h]/mx)+'" width="'+(bw-2)+'" height="'+((H-28)*base[h]/mx)+'" fill="#d6dccf"/>';if(tdy[h]!=null)s+='<rect x="'+(x+bw*0.25)+'" y="'+(H-18-(H-28)*tdy[h]/mx)+'" width="'+(bw*0.5)+'" height="'+((H-28)*tdy[h]/mx)+'" fill="#166534"/>';if(h%3===0)s+='<text x="'+(x+bw/2)+'" y="'+(H-5)+'" font-size="9" fill="#667062" text-anchor="middle">'+h+'</text>'}
+  return'<svg class="chart" viewBox="0 0 '+W+' '+H+'" direction="ltr">'+s+'</svg><div class="row muted" style="gap:14px;font-size:12px"><span>▮ <span style="color:#166534">اليوم</span></span><span style="color:#9aa594">▮ المعتاد (7 أيام)</span><span>الساعة</span></div>'}
+
+function vCam(){
+  const C=S.cams;if(!camSel||!C.find(c=>c.id===camSel))camSel=C[0]?C[0].id:null;const c=C.find(x=>x.id===camSel);
+  let h='<div class="card"><div class="row between"><h2>📷 المراقبة بالكاميرا</h2><button class="btn sm" onclick="camForm()">➕ كاميرا</button></div>';
+  if(!C.length)h+='<p class="muted">أضف كاميرا: كاميرا هذا الهاتف، أو كاميرا IP عبر رابط صورة (Snapshot). يمكنك أيضاً استخدام هاتف قديم ككاميرا عبر تطبيق IP Webcam.</p><label class="btn sec full">🖼️ جرّب: تحليل صورة من المعرض<input type="file" accept="image/*" style="display:none" onchange="analyzePhoto(this)"></label>'+(photoRes?overlayHTML(null,photoRes)+resKpis(photoRes.r)+(photoRes.rules||[]).map(a=>recHTML(Object.assign({id:'x'},a))).join(''):'');
+  else{
+    h+='<div class="tabs">'+C.map(x=>'<button class="'+(x.id===camSel?'on':'')+'" onclick="camSel=\''+x.id+'\';render()">'+(x.enabled?'🟢 ':'⚪ ')+esc(x.name)+'</button>').join('')+'</div>';
+    const on=S.camCfg.on;
+    h+='<div class="rec '+(on?'':'info')+'" style="'+(on?'border-color:#86efac;background:#f0fdf4':'')+'"><div class="row between"><div><div class="t">'+(on?'<span class="rec-dot" style="background:#16a34a"></span> المراقبة تعمل':'المراقبة متوقفة')+'</div><div class="why">فحص كل '+S.camCfg.interval+' دقيقة لـ '+C.filter(x=>x.enabled).length+' كاميرا مفعلة'+(on?'. أبقِ التطبيق مفتوحاً والهاتف على الشاحن':'')+'</div></div>'+(on?'<button class="btn bad sm" onclick="stopMon()">إيقاف</button>':'<button class="btn sm" onclick="startMon()">▶ تشغيل</button>')+'</div><label class="f" style="margin:8px 0 0">الفحص كل<select onchange="S.camCfg.interval=+this.value;save();if(S.camCfg.on)startMon()">'+[1,2,5,10,15,30].map(m=>'<option value="'+m+'"'+(m===S.camCfg.interval?' selected':'')+'>'+m+' دقيقة</option>').join('')+'</select></label></div>';
+    const res=lastRes[c.id];
+    h+='<h3>'+esc(c.name)+' — '+(c.type==='phone'?'كاميرا الهاتف':'كاميرا IP')+(fl(c.flockId)?' • '+esc(fl(c.flockId).name):'')+'</h3>';
+    if(res&&res.err)h+='<div class="warnbox" style="background:#fee2e2;color:#991b1b">⚠ '+esc(res.err)+'</div>';
+    if(res&&res.snap)h+=overlayHTML(c,res)+'<p class="muted" style="margin:4px 0">آخر فحص '+hm(res.t)+'. اللون الأخضر = كثافة الطيور، والأرقام = رقم الخانة.</p>'+resKpis(res.r)+(res.rules?res.rules.map(a=>recHTML(Object.assign({id:'x'},a))).join(''):'');
+    else if(!res)h+='<div class="empty">اضغط "فحص الآن" لأخذ صورة وتحليلها</div>';
+    h+='<div class="row" style="margin-top:10px"><button class="btn" onclick="checkNow(\''+c.id+'\')">📸 فحص الآن</button><button class="btn sec" onclick="zoneEditor(\''+c.id+'\')">🗺️ تحديد المعالف والمشارب</button><button class="btn ghost" onclick="camForm(\''+c.id+'\')">⚙️</button><label class="btn ghost">🖼️ صورة<input type="file" accept="image/*" style="display:none" onchange="analyzePhoto(this)"></label></div>';
+  }
+  h+='</div>';
+  if(c){h+='<div class="card"><h2>📊 نشاط القطيع حسب الساعة</h2>'+actChart(c)+'<p class="muted">يتعلم البرنامج "المعتاد" لكل ساعة من آخر 7 أيام. التنبيه بالنشاط يبدأ بعد 5 قراءات على الأقل لنفس الساعة'+(S.ai.enabled?'':' (متوقف لأن الذكاء الاصطناعي متوقف)')+'.</p></div>'}
+  const AL=S.camAlerts.filter(a=>!c||a.cam===c.id).slice(0,25);
+  h+='<div class="card"><h2>🚨 تنبيهات الكاميرا</h2>'+(AL.length?AL.map(a=>'<div class="rec '+a.sev+'"><div class="row between"><div class="t">'+(a.sev==='bad'?'🔴 ':a.sev==='warn'?'🟠 ':'🔵 ')+a.title+'</div><span class="muted">'+new Date(a.t).toLocaleString('en-GB',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})+'</span></div>'+(a.snap?'<img src="'+a.snap+'" style="width:100%;max-width:240px;border-radius:8px;margin-top:6px;display:block">':'')+'<div class="why">السبب: '+a.why+'</div><div class="act">👈 '+a.act+'</div>'+(SENS_MAP[a.type]?(a.fb?'<div class="muted" style="margin-top:5px">تقييمك: '+(a.fb==='ok'?'✔ صحيح':'✖ إنذار كاذب')+'</div>':'<div class="row" style="margin-top:7px"><button class="btn sm sec" onclick="camFeedback(\''+a.id+'\',1)">✔ صحيح</button><button class="btn sm ghost" onclick="camFeedback(\''+a.id+'\',0)">✖ إنذار كاذب</button></div>'):'')+'</div>').join(''):'<div class="empty">لا توجد تنبيهات</div>')+'</div>';
+  h+='<div class="card"><h2>🎛️ الحساسية (تحت سيطرتك)</h2><table>'+Object.keys(SENS_NAME).map(k=>'<tr><td>'+SENS_NAME[k]+'</td><td><b>'+S.camCfg.sens[k]+'</b></td></tr>').join('')+'</table>'+
+    (S.camCfg.proposal?'<div class="rec info" style="margin-top:10px"><div class="t">اقتراح ضبط بانتظار موافقتك</div>'+Object.keys(S.camCfg.proposal.why).map(k=>'<div class="why">'+SENS_NAME[k]+': <b>'+S.camCfg.sens[k]+' ← '+S.camCfg.proposal.sens[k]+'</b><br>السبب: '+S.camCfg.proposal.why[k]+'</div>').join('')+'<div class="row" style="margin-top:8px"><button class="btn" onclick="approveCamSens()">✅ اعتماد</button><button class="btn bad" onclick="S.camCfg.proposal=null;aiLog(\'رفض اقتراح حساسية الكاميرات\');save();render()">✖ رفض</button></div></div>':'<div class="row" style="margin-top:10px"><button class="btn sec" onclick="proposeCamSens()">🧠 اقترح ضبطاً من تقييماتي</button>'+((S.camCfg.history||[]).length?'<button class="btn ghost" onclick="undoCamSens()">↩ الرجوع للسابق</button>':'')+'</div>')+
+    '<p class="muted">لا تتغير الحساسية إلا بموافقتك. قيّم التنبيهات بـ "صحيح" أو "إنذار كاذب" ليتعلم البرنامج.</p><button class="btn ghost sm" onclick="ask(\'مسح خط الأساس المتعلم لكل الكاميرات؟\',()=>{S.camSamples=[];aiLog(\'مسح خط أساس الكاميرات\');save();render()})">مسح خط الأساس</button></div>';
+  h+='<div class="card"><h2>ℹ️ كيف يعمل وحدوده</h2><p class="muted">يأخذ صورتين بفارق 1.5 ثانية في كل فحص. يقيس الحركة من الفرق بينهما، ويقيس توزيع الطيور بفصل لون الريش عن الفرشة على شبكة 8×6 خانات. يعمل كلياً على الهاتف بدون إنترنت. الحدود: يحتاج كاميرا ثابتة وإضاءة كافية، وفرقاً واضحاً بين لون الطيور والفرشة (فعّل "عكس" إن كانت الفرشة أفتح). ولا يميّز الأمراض من الصورة، بل يلفت انتباهك لتفحص بنفسك.</p></div>';
+  return h;
+}
+function camForm(id){const c=id?S.cams.find(x=>x.id===id):{name:'كاميرا '+(S.cams.length+1),type:'phone',facing:'environment',enabled:true,lightsOn:'05:00',flockId:(curFlock()||{}).id};
+  const body=inp('name','اسم الكاميرا / مكانها',c.name)+selI('type','النوع',c.type,[['phone','كاميرا هذا الهاتف'],['url','كاميرا IP / هاتف آخر (رابط صورة)']])+
+   '<div class="grid">'+selI('facing','كاميرا الهاتف',c.facing||'environment',[['environment','الخلفية'],['user','الأمامية']])+selI('flockId','الدفعة',c.flockId||'',[['','الدفعة الحالية']].concat(S.flocks.map(f=>[f.id,f.name])))+'</div>'+
+   inp('url','رابط الصورة (لكاميرا IP)',c.url,'url','placeholder="http://192.168.1.20:8080/shot.jpg" dir="ltr"')+'<div class="grid">'+inp('user','اسم المستخدم',c.user,'text','dir="ltr" autocomplete="off"')+inp('pass','كلمة المرور',c.pass,'password','dir="ltr" autocomplete="off"')+'</div>'+
+   inp('lightsOn','بداية فترة الضوء يومياً',c.lightsOn||'05:00','time')+
+   '<label class="chk"><input type="checkbox" data-k="invert" '+(c.invert?'checked':'')+'>عكس: الفرشة أفتح من الطيور</label><label class="chk"><input type="checkbox" data-k="enabled" '+(c.enabled!==false?'checked':'')+'>مفعّلة في المراقبة</label>'+
+   '<details style="margin-top:8px"><summary class="muted">أمثلة روابط الكاميرات</summary><div class="muted" dir="ltr" style="text-align:left;font-size:12px;line-height:1.8">Hikvision: http://IP/ISAPI/Streaming/channels/101/picture<br>Dahua / Imou: http://IP/cgi-bin/snapshot.cgi<br>IP Webcam (Android): http://IP:8080/shot.jpg<br>Reolink: http://IP/cgi-bin/api.cgi?cmd=Snap&channel=0&user=U&password=P</div><p class="muted">روابط بث الفيديو RTSP غير مدعومة، فاستخدم رابط الصورة الثابتة. يجب أن يكون الهاتف على نفس شبكة الكاميرا.</p></details>';
+  sheet(id?'إعداد الكاميرا':'كاميرا جديدة',body,v=>{if(!v.name)return false;if(v.type==='url'&&!/^https?:\/\//.test(v.url||'')){toast('أدخل رابطاً يبدأ بـ http://');return false}
+    v.deviceId=null;if(id){if(c.type==='phone')stopStream(id);Object.assign(c,v)}else{const n=Object.assign({id:uid(),zones:{}},v);S.cams.push(n);camSel=n.id}},
+    id?()=>{stopStream(id);S.cams=S.cams.filter(x=>x.id!==id);S.camAlerts=S.camAlerts.filter(a=>a.cam!==id);S.camSamples=S.camSamples.filter(s=>s.cam!==id)}:null)}
+function zoneEditor(id){const c=S.cams.find(x=>x.id===id);const res=lastRes[id];if(!res||!res.snap){toast('اضغط "فحص الآن" أولاً لأخذ صورة');return}
+  const z=Object.assign({},c.zones||{});const order=['','feed','water','x'];
+  const draw=()=>{let g='';for(let k=0;k<GW*GH;k++){const t=z[k]||'';g+='<div data-c="'+k+'" style="border:1px solid rgba(255,255,255,.5);background:'+(t?ZONES[t][1]+'99':'transparent')+';color:#fff;font-size:10px;display:flex;align-items:center;justify-content:center;text-shadow:0 0 3px #000;cursor:pointer">'+(t?ZONES[t][0]:k+1)+'</div>'}return g};
+  sheet('تحديد المناطق: '+esc(c.name),'<p class="muted">اضغط على الخانة للتبديل: معلف ← مشرب ← مستبعد (جدار، معدات، دفاية) ← لا شيء.</p><div style="position:relative" dir="ltr"><img src="'+res.snap+'" style="width:100%;display:block;border-radius:10px"><div id="zg" style="position:absolute;inset:0;display:grid;grid-template-columns:repeat('+GW+',1fr);grid-template-rows:repeat('+GH+',1fr)">'+draw()+'</div></div>',()=>{c.zones=z;toast('تم حفظ المناطق')});
+  const zg=document.getElementById('zg');zg.onclick=e=>{const k=e.target.dataset.c;if(k==null)return;z[k]=order[(order.indexOf(z[k]||'')+1)%order.length];if(!z[k])delete z[k];zg.innerHTML=draw()};
+}
+function camRecs(f){const lim=Date.now()-2*3600000;return S.camAlerts.filter(a=>a.t>lim&&a.fb!=='false'&&(!a.flockId||a.flockId===f.id)).slice(0,4).map(a=>({id:'cam_'+a.id,sev:a.sev,title:'📷 '+a.title+' ('+esc(a.camName)+')',why:a.why+' <span class="muted">• '+hm(a.t)+'</span>',act:a.act}))}
+if(S.camCfg&&S.camCfg.on){S.camCfg.on=false;setTimeout(()=>{if(S.cams.some(c=>c.enabled))startMon()},1500)}
+
+render();
+</script>
+</body>
+</html>
