@@ -2,6 +2,10 @@ package com.farm.broiler;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.AlarmManager;
+import android.content.Context;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -308,6 +312,33 @@ public class MainActivity extends Activity {
                     .setContentIntent(pi)
                     .build();
             getSystemService(NotificationManager.class).notify((int) (System.currentTimeMillis() % 1_000_000), n);
+        }
+
+        /** جدولة تذكيرات الجدول الليلي (تعمل والتطبيق مغلق). تستبدل الجدولة السابقة */
+        @JavascriptInterface
+        public void scheduleReminders(String json) {
+            try {
+                AlarmManager am = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+                for (int i = 0; i < 20; i++) {
+                    PendingIntent old = PendingIntent.getBroadcast(MainActivity.this, 900 + i,
+                            new Intent(MainActivity.this, AlarmReceiver.class),
+                            PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_NO_CREATE);
+                    if (old != null) { am.cancel(old); old.cancel(); }
+                }
+                JSONArray a = new JSONArray(json);
+                for (int i = 0; i < a.length() && i < 20; i++) {
+                    JSONObject o = a.getJSONObject(i);
+                    Intent it = new Intent(MainActivity.this, AlarmReceiver.class)
+                            .putExtra("title", o.optString("title"))
+                            .putExtra("text", o.optString("text"))
+                            .putExtra("id", i);
+                    PendingIntent pi = PendingIntent.getBroadcast(MainActivity.this, 900 + i, it,
+                            PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT);
+                    am.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, o.getLong("at"), pi);
+                }
+                if (a.length() > 0 && Build.VERSION.SDK_INT >= 33 && !has(Manifest.permission.POST_NOTIFICATIONS))
+                    runOnUiThread(() -> requestPermissions(new String[]{Manifest.permission.POST_NOTIFICATIONS}, REQ_NOTIF));
+            } catch (Exception ignored) {}
         }
 
         /** إبقاء الشاشة تعمل أثناء المراقبة */

@@ -133,8 +133,19 @@ const humRange=day=>day<7?[60,70]:[50,65];
 function lightProg(day,slaughterDay){
   if(day<=7)return{L:23,D:1,lux:'30–40',note:'إضاءة شبه مستمرة لتعليم الصيصان مكان العلف والماء'};
   if(slaughterDay&&day>=slaughterDay-3)return{L:20,D:4,lux:'5–10',note:'آخر 3 أيام قبل التسويق: يمكن تقليل العتمة تدريجياً'};
+  if(day===8)return{L:22,D:2,lux:'10–20',note:'بداية زيادة العتمة تدريجياً حتى لا تتوتر الطيور'};
+  if(day===9)return{L:20,D:4,lux:'5–10',note:'زيادة العتمة تدريجياً'};
   return{L:18,D:6,lux:'5–10',note:'عتمة 6 ساعات منها 4 متصلة على الأقل لصحة الأرجل والمناعة'};
 }
+const toMin=t=>{const[h,m]=String(t||'22:00').split(':').map(Number);return(h||0)*60+(m||0)};
+const toHM=m=>{m=((Math.round(m)%1440)+1440)%1440;return String(Math.floor(m/60)).padStart(2,'0')+':'+String(m%60).padStart(2,'0')};
+const localDate=t=>{const x=new Date(t);x.setMinutes(x.getMinutes()-x.getTimezoneOffset());return x.toISOString().slice(0,10)};
+function slaughterDayOf(f){for(let d=0;d<80;d++)if(expW(f.breed,d)>=S.settings.targetWeight*1000)return d;return 42}
+function nightPlan(f,day){const lp=lightProg(day,slaughterDayOf(f));const st=toMin(f.darkStart);return{off:toHM(st),on:toHM(st+lp.D*60),offM:st,D:lp.D,L:lp.L,lux:lp.lux,note:lp.note}}
+// هل القطيع الآن في فترة العتمة؟ (العتمة قد تمتد بعد منتصف الليل فتُحسب من يوم بدايتها)
+function darkState(f,now){const d=new Date(now);const mins=d.getHours()*60+d.getMinutes();const st=toMin(f.darkStart);const startedToday=mins>=st;
+  const age=ageOf(f,localDate(now))-(startedToday?0:1);const p=nightPlan(f,Math.max(0,age));const diff=(mins-st+1440)%1440;const dark=diff<p.D*60;
+  return{dark,plan:p,minsLeft:dark?p.D*60-diff:(st-mins+1440)%1440}}
 const minVent=(birds,wKg)=>birds*0.6*Math.pow(Math.max(wKg,0.04),0.75);
 const maxVent=(birds,wKg)=>birds*wKg*6;
 
@@ -276,6 +287,7 @@ function vHome(){
    kpi('العلف الكلي',fmt(st.feed)+' كغ',fmt(st.feed/Math.max(1,f.count)*1000)+' غ/طائر')+
    kpi('مؤشر الكفاءة EPEF',fmt(st.epef),'جيد > 350')+
   '</div>'+(f.status==='active'&&mDay?'<p class="muted" style="margin:10px 0 0">📅 الوصول لوزن التسويق '+S.settings.targetWeight+' كغ متوقع بعمر <b>'+mDay+'</b> يوم (بعد '+(mDay-st.age)+' يوم).</p>':'')+
+  (f.status==='active'?nightLine(f):'')+
   (f.status==='active'?'<div class="row" style="margin-top:10px"><button class="btn" onclick="logForm()">➕ سجل اليوم</button><button class="btn sec" onclick="go(\'log\')">عرض السجل</button></div>':'')+'</div>';
   h+='<div class="card"><h2>🧭 التوجيه والتنبيهات</h2>'+(R.length?R.map(recHTML).join(''):'<div class="empty">✅ لا توجد تنبيهات. كل المؤشرات ضمن الحدود.</div>')+'<p class="muted" style="margin:6px 0 0">'+(S.ai.enabled?'🤖 الذكاء الاصطناعي مفعّل (v'+S.ai.active+')':'⏸ الذكاء الاصطناعي متوقف: تعمل القواعد العامة فقط')+'</p></div>';
   h+='<div class="card"><h2>📈 الوزن مقابل المتوقع</h2>'+weightChart(f)+'</div>';
@@ -317,9 +329,10 @@ function vEnv(){
   }
   if(sub.env==='light'){
     const sd=f?(()=>{for(let d=0;d<70;d++)if(expW(f.breed,d)>=S.settings.targetWeight*1000)return d;return 42})():42;const lp=lightProg(age,sd);
+    if(f)h+=nightCard(f);
     h+='<div class="card"><h2>💡 برنامج الإضاءة اليوم</h2><div class="grid3">'+kpi('ضوء',lp.L+' س','')+kpi('عتمة',lp.D+' س','4 متصلة على الأقل')+kpi('الشدة',lp.lux+' لوكس','')+'</div><p class="muted">'+lp.note+'</p>'+
     '<h3>حاسبة شدة الإضاءة</h3><div class="grid"><label class="f">مساحة العنبر م²<input id="la" type="number" value="'+(f&&f.area||1000)+'"></label><label class="f">اللوكس المطلوب<input id="ll" type="number" value="'+(age<=7?35:8)+'"></label><label class="f">لومن اللمبة الواحدة<input id="lm" type="number" value="1600"></label><label class="f">معامل الاستفادة (0.4–0.6)<input id="lu" type="number" step="0.05" value="0.5"></label></div><button class="btn full" onclick="calcLight()">احسب عدد اللمبات</button><div id="lres" style="margin-top:10px"></div></div>'+
-    '<div class="card"><h2>🗓️ البرنامج الكامل</h2><table><tr><th>الأيام</th><th>ضوء/عتمة</th><th>لوكس</th></tr><tr><td>0–7</td><td>23 / 1</td><td>30–40</td></tr><tr><td>8 – '+(sd-4)+'</td><td>18 / 6</td><td>5–10</td></tr><tr><td>'+(sd-3)+' – '+sd+'</td><td>20 / 4</td><td>5–10</td></tr></table><p class="muted">التسويق المتوقع بعمر '+sd+' يوم لوزن '+S.settings.targetWeight+' كغ. قِس الإضاءة على مستوى رأس الطائر.</p></div>';
+    '<div class="card"><h2>🗓️ البرنامج الكامل</h2><table><tr><th>الأيام</th><th>ضوء/عتمة</th><th>لوكس</th></tr><tr><td>0–7</td><td>23 / 1</td><td>30–40</td></tr><tr><td>8</td><td>22 / 2</td><td>10–20</td></tr><tr><td>9</td><td>20 / 4</td><td>5–10</td></tr><tr><td>10 – '+(sd-4)+'</td><td>18 / 6</td><td>5–10</td></tr><tr><td>'+(sd-3)+' – '+sd+'</td><td>20 / 4</td><td>5–10</td></tr></table><p class="muted">التسويق المتوقع بعمر '+sd+' يوم لوزن '+S.settings.targetWeight+' كغ. قِس الإضاءة على مستوى رأس الطائر.</p></div>';
   }
   if(sub.env==='space'){
     h+='<div class="card"><h2>📐 حساب المساحة والكثافة</h2><div class="grid"><label class="f">عدد الطيور<input id="sb" type="number" value="'+(f?f.count:10000)+'"></label><label class="f">وزن التسويق المتوقع (كغ)<input id="sw" type="number" step="0.1" value="'+S.settings.targetWeight+'"></label><label class="f">الكثافة القصوى (كغ/م²)<input id="sd" type="number" value="'+S.settings.maxDensity+'"></label><label class="f">المساحة المتاحة م²<input id="sa" type="number" value="'+(f&&f.area||'')+'"></label></div><button class="btn full" onclick="calcSpace()">احسب</button><div id="sres" style="margin-top:10px"></div>'+
@@ -399,9 +412,9 @@ function vMore(){
   }
   if(sub.more==='ai')h+=vAI();
   if(sub.more==='set'){const s=S.settings;
-    h+='<div class="card"><h2>⚙️ الإعدادات</h2><label class="f">اسم المزرعة<input id="s_farm" value="'+esc(s.farm)+'"></label><div class="grid"><label class="f">العملة<input id="s_cur" value="'+esc(s.currency)+'"></label><label class="f">الكثافة القصوى كغ/م²<input id="s_md" type="number" value="'+s.maxDensity+'"></label><label class="f">وزن التسويق المستهدف (كغ)<input id="s_tw" type="number" step="0.1" value="'+s.targetWeight+'"></label><label class="f">قدرة المروحة م³/س<input id="s_fc" type="number" value="'+s.fanCap+'"></label></div><button class="btn full" onclick="saveSet()">حفظ</button></div>'+
+    h+='<div class="card"><h2>⚙️ الإعدادات</h2><label class="f">اسم المزرعة<input id="s_farm" value="'+esc(s.farm)+'"></label><div class="grid"><label class="f">العملة<input id="s_cur" value="'+esc(s.currency)+'"></label><label class="f">الكثافة القصوى كغ/م²<input id="s_md" type="number" value="'+s.maxDensity+'"></label><label class="f">وزن التسويق المستهدف (كغ)<input id="s_tw" type="number" step="0.1" value="'+s.targetWeight+'"></label><label class="f">قدرة المروحة م³/س<input id="s_fc" type="number" value="'+s.fanCap+'"></label></div><label class="chk"><input type="checkbox" id="s_nr" '+(s.nightRemind!==false?'checked':'')+'>🔔 تذكير قبل إطفاء الأنوار وإشعالها بـ 10 دقائق</label><button class="btn full" onclick="saveSet()">حفظ</button></div>'+
     '<div class="card"><h2>💾 النسخ الاحتياطي</h2><p class="muted">البيانات محفوظة على هذا الجهاز فقط. صدّر نسخة احتياطية أسبوعياً واحفظها في مكان آمن.</p><div class="row"><button class="btn" onclick="exportData()">⬇️ تصدير نسخة</button><label class="btn sec">⬆️ استيراد نسخة<input type="file" accept=".json,application/json" style="display:none" onchange="importData(this)"></label><button class="btn ghost" onclick="exportCSV()">📄 تصدير السجل CSV</button></div></div>'+
-    '<div class="card"><h2>⚠️ منطقة الخطر</h2><button class="btn bad" onclick="ask(\'حذف كل البيانات نهائياً؟ صدّر نسخة احتياطية أولاً.\',()=>ask(\'تأكيد أخير: لا يمكن التراجع.\',()=>{S=blank();save();render()}))">حذف كل البيانات</button></div><p class="muted" style="text-align:center">الإصدار 1.1</p>';
+    '<div class="card"><h2>⚠️ منطقة الخطر</h2><button class="btn bad" onclick="ask(\'حذف كل البيانات نهائياً؟ صدّر نسخة احتياطية أولاً.\',()=>ask(\'تأكيد أخير: لا يمكن التراجع.\',()=>{S=blank();save();render()}))">حذف كل البيانات</button></div><p class="muted" style="text-align:center">الإصدار 1.2</p>';
   }
   return h;
 }
@@ -418,7 +431,7 @@ function vAI(){
   h+='<div class="card"><h2>📜 سجل القرارات</h2>'+(a.log.length?'<div class="list">'+a.log.slice(0,30).map(l=>'<div class="it muted">'+l.d+' — '+esc(l.t)+'</div>').join('')+'</div>':'<div class="empty">لا يوجد</div>')+'</div>';
   return h;
 }
-function saveSet(){const s=S.settings;s.farm=s_farm.value;s.currency=s_cur.value||'₪';s.maxDensity=+s_md.value||33;s.targetWeight=+s_tw.value||2.2;s.fanCap=+s_fc.value||20000;save();toast('تم الحفظ');render()}
+function saveSet(){const s=S.settings;s.farm=s_farm.value;s.currency=s_cur.value||'₪';s.maxDensity=+s_md.value||33;s.targetWeight=+s_tw.value||2.2;s.fanCap=+s_fc.value||20000;s.nightRemind=s_nr.checked;save();scheduleNight();toast('تم الحفظ');render()}
 
 /* ============ النماذج (Forms) ============ */
 function sheet(title,body,onSave,onDel){const m=document.createElement('div');m.className='modal';m.innerHTML='<div class="sheet"><h2>'+title+'</h2>'+body+'<div class="row" style="margin-top:8px"><button class="btn" id="m_ok">حفظ</button><button class="btn ghost" id="m_x">إلغاء</button>'+(onDel?'<button class="btn bad" id="m_del" style="margin-inline-start:auto">حذف</button>':'')+'</div></div>';document.body.appendChild(m);
@@ -427,10 +440,10 @@ function ask(msg,yes){const m=document.createElement('div');m.className='modal';
 const inp=(k,l,v,t='text',x='')=>'<label class="f">'+l+'<input data-k="'+k+'" type="'+t+'" value="'+esc(v==null?'':v)+'" '+x+'></label>';
 const selI=(k,l,v,opts)=>'<label class="f">'+l+'<select data-k="'+k+'">'+opts.map(o=>{const[a,b]=Array.isArray(o)?o:[o,o];return'<option value="'+esc(a)+'"'+(a==v?' selected':'')+'>'+esc(b)+'</option>'}).join('')+'</select></label>';
 function flockForm(id){const f=id?fl(id):{name:'دفعة '+(S.flocks.length+1),breed:'ross308',startDate:today(),count:10000,area:'',house:''};
-  sheet(id?'تعديل الدفعة':'دفعة جديدة',inp('name','اسم الدفعة',f.name)+'<div class="grid">'+selI('breed','السلالة',f.breed,Object.entries(BREEDS).map(([k,b])=>[k,b.name]))+inp('startDate','تاريخ الاستلام (يوم 0)',f.startDate,'date')+inp('count','عدد الصيصان',f.count,'number')+inp('area','مساحة العنبر م²',f.area,'number')+'</div>'+inp('house','العنبر / مصدر الصيصان',f.house)+(id?'':'<label class="chk"><input type="checkbox" data-k="vacc" checked>إضافة برنامج التحصين الافتراضي</label>'),
+  sheet(id?'تعديل الدفعة':'دفعة جديدة',inp('name','اسم الدفعة',f.name)+'<div class="grid">'+selI('breed','السلالة',f.breed,Object.entries(BREEDS).map(([k,b])=>[k,b.name]))+inp('startDate','تاريخ الاستلام (يوم 0)',f.startDate,'date')+inp('count','عدد الصيصان',f.count,'number')+inp('area','مساحة العنبر م²',f.area,'number')+'</div>'+inp('house','العنبر / مصدر الصيصان',f.house)+inp('darkStart','🌙 موعد إطفاء الأنوار (بداية النوم)',f.darkStart||'22:00','time')+(id?'':'<label class="chk"><input type="checkbox" data-k="vacc" checked>إضافة برنامج التحصين الافتراضي</label>'),
   v=>{if(!v.name||!v.startDate||!(+v.count>0)){toast('أكمل الاسم والتاريخ والعدد');return false}v.count=+v.count;v.area=+v.area||0;
-    if(id){Object.assign(f,{name:v.name,breed:v.breed,startDate:v.startDate,count:v.count,area:v.area,house:v.house})}
-    else{const n={id:uid(),name:v.name,breed:v.breed,startDate:v.startDate,count:v.count,area:v.area,house:v.house,status:'active'};S.flocks.push(n);S.cur=n.id;if(v.vacc)S.settings.vaccTpl.forEach(t=>S.vaccines.push({id:uid(),flockId:n.id,day:t.day,name:t.name,method:t.method,done:false}))}},
+    if(id){Object.assign(f,{name:v.name,breed:v.breed,startDate:v.startDate,count:v.count,area:v.area,house:v.house,darkStart:v.darkStart||'22:00'})}
+    else{const n={id:uid(),name:v.name,breed:v.breed,startDate:v.startDate,count:v.count,area:v.area,house:v.house,darkStart:v.darkStart||'22:00',status:'active'};S.flocks.push(n);S.cur=n.id;if(v.vacc)S.settings.vaccTpl.forEach(t=>S.vaccines.push({id:uid(),flockId:n.id,day:t.day,name:t.name,method:t.method,done:false}))}},
   id?()=>{S.flocks=S.flocks.filter(x=>x.id!==id);['logs','vaccines','meds','finance','diag','sounds'].forEach(k=>S[k]=S[k].filter(x=>x.flockId!==id));S.cur=null}:null)}
 function closeForm(id){const f=fl(id);const st=stats(f);sheet('إغلاق الدفعة وتسويقها','<p class="muted">بعد الإغلاق تدخل بيانات الدفعة في تدريب الذكاء الاصطناعي.</p><div class="grid">'+inp('endDate','تاريخ التسويق',today(),'date')+inp('soldBirds','عدد الطيور المباعة',st.live,'number')+inp('soldWeightKg','الوزن الحي المباع كغ',Math.round(st.live*st.estW/1000),'number')+inp('price','سعر الكيلو (اختياري)','','number','step="0.01"')+'</div>',
   v=>{f.status='closed';f.endDate=v.endDate;f.soldBirds=0;f.soldCount=+v.soldBirds;f.soldWeightKg=+v.soldWeightKg;if(+v.price)S.finance.push({id:uid(),flockId:id,date:v.endDate,type:'in',cat:'بيع طيور',amount:Math.round(v.price*v.soldWeightKg),note:fmt(v.soldWeightKg)+' كغ × '+v.price});aiLog('إغلاق دفعة '+f.name+' — جاهزة للتدريب');toast('أُغلقت الدفعة. يمكنك تدريب النموذج من قسم الذكاء الاصطناعي')})}
@@ -501,13 +514,13 @@ function analyze(c,A,B){
   const zr=t=>{const ks=Object.keys(z).filter(k=>z[k]===t);if(!ks.length||mean<0.03)return null;return ks.reduce((a,k)=>a+(covF[k]||0),0)/ks.length/mean};
   return{bright:+bright.toFixed(1),th,cov:+(mean*100).toFixed(1),cv:+(mean?sd/mean:0).toFixed(2),empty:+empty.toFixed(2),act:A===B?null:+(mt/Math.max(1,ct)*100).toFixed(2),feed:zr('feed'),water:zr('water'),covF,motF};
 }
-function isLight(c,L,now){const[h,m]=(c.lightsOn||'05:00').split(':').map(Number);const d=new Date(now);const mins=((d.getHours()*60+d.getMinutes())-(h*60+m)+1440)%1440;return mins<L*60}
+function isLight(c,L,now){const f=fl(c.flockId)||curFlock();if(f)return!darkState(f,now).dark;const[h,m]=(c.lightsOn||'05:00').split(':').map(Number);const d=new Date(now);const mins=((d.getHours()*60+d.getMinutes())-(h*60+m)+1440)%1440;return mins<L*60}
 function hourBase(c,hour){const lim=Date.now()-7*86400000;const v=S.camSamples.filter(s=>s.cam===c.id&&s.hour===hour&&s.t>lim&&s.act!=null).map(s=>s.act).sort((a,b)=>a-b);return{n:v.length,med:v.length?v[Math.floor(v.length/2)]:null}}
 function camRules(c,r,now){
   const out=[];const add=(type,sev,title,why,act)=>out.push({type,sev,title,why,act});
   const f=fl(c.flockId)||curFlock();const age=f?ageOf(f):null;const lp=age!=null?lightProg(age):null;const light=lp?isLight(c,lp.L,now):true;
   const sens=S.camCfg.sens;const ll=f?flockLogs(f).slice(-1)[0]:null;const tT=age!=null?targetTemp(age):null;const tN=ll&&+ll.tempC&&ll.date>=new Date(now-86400000).toISOString().slice(0,10)?+ll.tempC:null;
-  if(r.bright<15&&light)add('dark','bad','الإضاءة مطفأة في وقت الضوء','سطوع الصورة <b>'+r.bright+'</b> من 255، وحسب برنامج الإضاءة ('+(lp?lp.L:'?')+' ساعة ضوء تبدأ '+(c.lightsOn||'05:00')+') يجب أن تكون مضاءة.','افحص الكهرباء والمؤقت واللمبات. انقطاع الضوء يوقف الأكل والشرب.');
+  if(r.bright<15&&light)add('dark','bad','الإضاءة مطفأة في وقت الضوء','سطوع الصورة <b>'+r.bright+'</b> من 255، وحسب الجدول الليلي (إطفاء '+(f?nightPlan(f,age).off:'?')+' وإشعال '+(f?nightPlan(f,age).on:'?')+') يجب أن تكون مضاءة الآن.','افحص الكهرباء والمؤقت واللمبات. انقطاع الضوء يوقف الأكل والشرب.');
   if(lp&&!light&&r.bright>70)add('lighton','warn','الإضاءة تعمل في وقت العتمة','سطوع الصورة <b>'+r.bright+'</b> والمفروض الآن فترة عتمة ('+lp.D+' ساعة).','اضبط مؤقت الإضاءة. العتمة ضرورية للأرجل والمناعة.');
   if(r.bright<15)return out;
   if(r.cov>3&&r.cv>sens.cluster&&r.empty>0.3){
@@ -613,7 +626,7 @@ function camForm(id){const c=id?S.cams.find(x=>x.id===id):{name:'كاميرا '+
   const body=inp('name','اسم الكاميرا / مكانها',c.name)+selI('type','النوع',c.type,[['phone','كاميرا هذا الهاتف'],['url','كاميرا IP / هاتف آخر (رابط صورة)']])+
    '<div class="grid">'+selI('facing','كاميرا الهاتف',c.facing||'environment',[['environment','الخلفية'],['user','الأمامية']])+selI('flockId','الدفعة',c.flockId||'',[['','الدفعة الحالية']].concat(S.flocks.map(f=>[f.id,f.name])))+'</div>'+
    inp('url','رابط الصورة (لكاميرا IP)',c.url,'url','placeholder="http://192.168.1.20:8080/shot.jpg" dir="ltr"')+'<div class="grid">'+inp('user','اسم المستخدم',c.user,'text','dir="ltr" autocomplete="off"')+inp('pass','كلمة المرور',c.pass,'password','dir="ltr" autocomplete="off"')+'</div>'+
-   inp('lightsOn','بداية فترة الضوء يومياً',c.lightsOn||'05:00','time')+
+   '<p class="muted">أوقات الضوء والعتمة تؤخذ من الجدول الليلي للدفعة (البيئة ← الإضاءة).</p>'+
    '<label class="chk"><input type="checkbox" data-k="invert" '+(c.invert?'checked':'')+'>عكس: الفرشة أفتح من الطيور</label><label class="chk"><input type="checkbox" data-k="enabled" '+(c.enabled!==false?'checked':'')+'>مفعّلة في المراقبة</label>'+
    '<details style="margin-top:8px"><summary class="muted">أمثلة روابط الكاميرات</summary><div class="muted" dir="ltr" style="text-align:left;font-size:12px;line-height:1.8">Hikvision: http://IP/ISAPI/Streaming/channels/101/picture<br>Dahua / Imou: http://IP/cgi-bin/snapshot.cgi<br>IP Webcam (Android): http://IP:8080/shot.jpg<br>Reolink: http://IP/cgi-bin/api.cgi?cmd=Snap&channel=0&user=U&password=P</div><p class="muted">روابط بث الفيديو RTSP غير مدعومة، فاستخدم رابط الصورة الثابتة. يجب أن يكون الهاتف على نفس شبكة الكاميرا.</p></details>';
   sheet(id?'إعداد الكاميرا':'كاميرا جديدة',body,v=>{if(!v.name)return false;if(v.type==='url'&&!/^https?:\/\//.test(v.url||'')){toast('أدخل رابطاً يبدأ بـ http://');return false}
@@ -628,6 +641,27 @@ function zoneEditor(id){const c=S.cams.find(x=>x.id===id);const res=lastRes[id];
 function camRecs(f){const lim=Date.now()-2*3600000;return S.camAlerts.filter(a=>a.t>lim&&a.fb!=='false'&&(!a.flockId||a.flockId===f.id)).slice(0,4).map(a=>({id:'cam_'+a.id,sev:a.sev,title:'📷 '+a.title+' ('+esc(a.camName)+')',why:a.why+' <span class="muted">• '+hm(a.t)+'</span>',act:a.act}))}
 if(S.camCfg&&S.camCfg.on){S.camCfg.on=false;setTimeout(()=>{if(S.cams.some(c=>c.enabled))startMon()},1500)}
 
+/* ============ الجدول الليلي ============ */
+function nightLine(f){const ds=darkState(f,Date.now());const p=ds.plan;const h=m=>Math.floor(m/60)+' س '+(m%60)+' د';
+  return'<div class="rec info" style="margin-top:10px"><div class="t">🌙 '+(ds.dark?'القطيع نائم الآن':'الجدول الليلي')+'</div><div class="why">'+(ds.dark?'تُشعل الأنوار <b>'+p.on+'</b> (بعد '+h(ds.minsLeft)+')':'تُطفأ الأنوار <b>'+p.off+'</b> لمدة <b>'+p.D+' ساعة</b> وتُشعل <b>'+p.on+'</b> (بعد '+h(ds.minsLeft)+')')+'</div></div>'}
+function nightCard(f){const age=ageOf(f);const sd=slaughterDayOf(f);const ds=darkState(f,Date.now());const p=nightPlan(f,age);
+  let rows='';for(let d=Math.max(0,age);d<=Math.min(sd,age+13);d++){const q=nightPlan(f,d);const dt=new Date(f.startDate);dt.setDate(dt.getDate()+d);const ch=d>Math.max(0,age)&&q.D!==nightPlan(f,d-1).D;
+    rows+='<tr'+(d===age?' style="background:#f0fdf4;font-weight:700"':ch?' style="background:#fffcf2"':'')+'><td>'+d+'</td><td>'+dt.toISOString().slice(5,10)+'</td><td>'+q.off+'</td><td>'+q.on+'</td><td>'+q.D+' س'+(ch?' ⬅':'')+'</td></tr>'}
+  return'<div class="card"><h2>🌙 الجدول الليلي (النوم)</h2><div class="grid3">'+kpi('إطفاء الأنوار',p.off,'بداية النوم')+kpi('مدة النوم',p.D+' ساعات','عمر '+age+' يوم')+kpi('إشعال الأنوار',p.on,'الاستيقاظ')+'</div>'+
+  '<p class="muted" style="margin:8px 0">'+(ds.dark?'😴 القطيع نائم الآن. لا تُشعل الأنوار ولا تدخل العنبر إلا للضرورة.':'☀️ وقت الضوء الآن.')+' '+p.note+'</p>'+
+  '<label class="f">موعد إطفاء الأنوار لهذه الدفعة<input type="time" value="'+(f.darkStart||'22:00')+'" onchange="fl(\''+f.id+'\').darkStart=this.value;save();scheduleNight();render()"></label>'+
+  '<h3>الأيام القادمة</h3><table><tr><th>العمر</th><th>التاريخ</th><th>إطفاء</th><th>إشعال</th><th>النوم</th></tr>'+rows+'</table>'+
+  '<p class="muted">⬅ = يوم تتغير فيه مدة النوم. العتمة تزيد تدريجياً من ساعة إلى 6 ساعات بين اليوم 7 و10، وتُقلَّل آخر 3 أيام قبل التسويق (يوم '+sd+'). اختر موعداً للإطفاء يكون فيه الجو أبرد ليلاً في الصيف، وتجنّب أن يقع الإشعال في أبرد ساعات الفجر شتاءً.</p></div>'}
+// تذكيرات: تُجدول على الهاتف (تعمل حتى والتطبيق مغلق) + تنبيه داخل التطبيق
+function nightEvents(hours){const out=[];const now=Date.now();if(S.settings.nightRemind===false)return out;
+  for(const f of S.flocks.filter(x=>x.status==='active')){for(let k=-1;k<=Math.ceil(hours/24)+1;k++){const base=new Date();base.setHours(0,0,0,0);base.setDate(base.getDate()+k);
+    const age=ageOf(f,localDate(base));if(age<0)continue;const p=nightPlan(f,age);const off=base.getTime()+p.offM*60000;const on=off+p.D*3600000;
+    for(const[t,ttl,txt]of[[off,'🌙 إطفاء الأنوار بعد 10 دقائق','دفعة '+f.name+': إطفاء '+p.off+' لمدة '+p.D+' ساعات (عمر '+age+' يوم).'],[on,'☀️ إشعال الأنوار بعد 10 دقائق','دفعة '+f.name+': إشعال '+p.on+' بعد نوم '+p.D+' ساعات.']]){const at=t-600000;if(at>now&&at<now+hours*3600000)out.push({at,title:ttl,text:txt})}}}
+  return out.sort((a,b)=>a.at-b.at).slice(0,20)}
+function scheduleNight(){try{if(window.Android&&Android.scheduleReminders)Android.scheduleReminders(JSON.stringify(nightEvents(72)))}catch(e){}}
+const nightShown={};
+setInterval(()=>{for(const e of nightEvents(1)){if(e.at-Date.now()<=60000&&!nightShown[e.at+e.title]){nightShown[e.at+e.title]=1;toast(e.title)}}},30000);
+scheduleNight();
 render();
 </script>
 </body>
